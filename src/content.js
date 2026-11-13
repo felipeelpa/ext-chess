@@ -30,7 +30,6 @@
     let lastEngineMsgAt = 0;         // última mensagem recebida do motor (detecta motor travado)
     let newGamePending = false;      // próxima análise manda "ucinewgame" ao motor
     let lastFEN = '';
-    let multiPV = 3; // Mostra os 3 melhores lances
     let analysisDepth = 12;
     let currentLines = [];
     let autoAnalyzeEnabled = false;
@@ -397,17 +396,24 @@
         return board && board.classList.contains('flipped');
     }
 
+    // Centro de uma casa ("e4") dentro de um retângulo de tabuleiro, em px relativos a ele.
+    // Usado pelas setas e pelo arrastar da jogada automática.
+    function squareCenter(sq, rect, flipped) {
+        const size = rect.width / 8;
+        const file = sq.charCodeAt(0) - 97;
+        const rank = parseInt(sq[1]) - 1;
+        return flipped
+            ? { x: (7 - file) * size + size / 2, y: rank * size + size / 2 }
+            : { x: file * size + size / 2, y: (7 - rank) * size + size / 2 };
+    }
+
     // ============= LER A POSIÇÃO DO TABULEIRO =============
     function getBoardPosition() {
         const positions = {};
         // Só as peças do tabuleiro principal (o maior da página); sem ele, todas as da página
         let root = document;
-        const boards = Array.from(document.querySelectorAll('.board'));
-        if (boards.length > 1) {
-            root = boards.reduce((a, b) => (b.getBoundingClientRect().width > a.getBoundingClientRect().width ? b : a));
-        } else if (boards.length === 1 && boards[0].querySelector('.piece')) {
-            root = boards[0];
-        }
+        const main = mainBoard();
+        if (main && (document.querySelectorAll('.board').length > 1 || main.querySelector('.piece'))) root = main;
         const pieces = root.querySelectorAll('.piece');
 
         pieces.forEach(piece => {
@@ -1778,14 +1784,14 @@
         return plan.best.move;
     }
 
-    // Recalcula o tempo do lance já analisado (usado quando o ritmo ou a jogada automática
-    // são alterados no meio da partida). Se a posição já mudou, o ciclo normal reanalisa.
     // Mesma posição = mesmas peças e mesma vez (direitos de roque / en passant podem oscilar na leitura)
     function samePosition(a, b) {
         if (!a || !b) return false;
         return placementOnly(a) === placementOnly(b) && a.split(' ')[1] === b.split(' ')[1];
     }
 
+    // Recalcula o tempo do lance já analisado (usado quando o ritmo ou a jogada automática
+    // são alterados no meio da partida). Se a posição já mudou, o ciclo normal reanalisa.
     function rescheduleAutoMove() {
         cancelPendingMove();
         if (!autoMoveEnabled || isAnalyzing || !lastBestMove) return false;
@@ -2133,23 +2139,8 @@
         if (!board) return;
 
         const boardRect = board.getBoundingClientRect();
-        const squareSize = boardRect.width / 8;
         const isFlipped = isBoardFlipped();
-
-        function getSquareCoords(sq) {
-            const file = sq.charCodeAt(0) - 97;
-            const rank = parseInt(sq[1]) - 1;
-
-            let x, y;
-            if (isFlipped) {
-                x = (7 - file) * squareSize + squareSize / 2;
-                y = rank * squareSize + squareSize / 2;
-            } else {
-                x = file * squareSize + squareSize / 2;
-                y = (7 - rank) * squareSize + squareSize / 2;
-            }
-            return { x, y };
-        }
+        const getSquareCoords = (sq) => squareCenter(sq, boardRect, isFlipped);
 
         const arrowContainer = document.createElement('div');
         arrowContainer.className = 'cpp-best-move-arrow';
@@ -2251,24 +2242,11 @@
         }
 
         const rect = board.getBoundingClientRect();
-        const squareSize = rect.width / 8;
         const isFlipped = isBoardFlipped();
 
         const getViewportCoords = (sq) => {
-            const file = sq.charCodeAt(0) - 97;
-            const rank = parseInt(sq[1]) - 1;
-            let x, y;
-            if (isFlipped) {
-                x = (7 - file) * squareSize + squareSize / 2;
-                y = rank * squareSize + squareSize / 2;
-            } else {
-                x = file * squareSize + squareSize / 2;
-                y = (7 - rank) * squareSize + squareSize / 2;
-            }
-            return {
-                x: rect.left + x,
-                y: rect.top + y
-            };
+            const c = squareCenter(sq, rect, isFlipped);
+            return { x: rect.left + c.x, y: rect.top + c.y };
         };
 
         const fromPos = getViewportCoords(from);
@@ -2791,8 +2769,6 @@
 
     // Recolhido: o painel fica FIXO no espaço vazio da barra lateral esquerda do site, sem passar da
     // largura dela, sem cobrir tabuleiro nem relógios e sem poder ser arrastado.
-    // Expandido: volta para onde estava e pode ficar flutuando na frente de outras coisas.
-    let expandedPos = null;
 
     // Tabuleiro principal: o maior da página (na tela "Jogar" há mais de um)
     function mainBoard() {
