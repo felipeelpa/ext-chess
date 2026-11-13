@@ -392,7 +392,7 @@
     }
 
     function isBoardFlipped() {
-        const board = document.querySelector('.board');
+        const board = mainBoard();
         return board && board.classList.contains('flipped');
     }
 
@@ -2135,7 +2135,7 @@
         document.querySelectorAll('.cpp-best-move-arrow').forEach(el => el.remove());
         if (!lines || lines.length === 0) return;
 
-        const board = document.querySelector('.board');
+        const board = mainBoard();
         if (!board) return;
 
         const boardRect = board.getBoundingClientRect();
@@ -2865,7 +2865,7 @@
     function highlightHangingPieces(attackAnalysis) {
         document.querySelectorAll('.cpp-hanging-overlay').forEach(el => el.remove());
 
-        const board = document.querySelector('.board');
+        const board = mainBoard();
         if (!board) return;
 
         const boardRect = board.getBoundingClientRect();
@@ -3235,6 +3235,7 @@
     let marathonStartAt = 0;        // quando tentar começar a próxima
     let marathonLastTry = 0;
     let marathonPendingSince = 0;
+    let marathonLiveTicks = 0;      // vezes seguidas em que uma partida em andamento foi vista (sem id na URL)
 
     function marathonLeft() { return Math.max(0, settings.marathonTotal - settings.marathonDone); }
 
@@ -3286,6 +3287,7 @@
         settings.autoMove = true;   // sem jogada automática a maratona não anda
         marathonMessage = '';
         marathonOverTicks = 0;
+        marathonLiveTicks = 0;
         marathonStartAt = 0;
         marathonPendingSince = 0;
         applySettings();
@@ -3307,6 +3309,7 @@
         settings.marathonDone = 0;   // parada (ou concluída): o contador volta ao número escolhido
         settings.marathonLastId = '';
         marathonMessage = msg || '';
+        marathonLiveTicks = 0;
         marathonStartAt = 0;
         marathonPendingSince = 0;
         saveSettings();
@@ -3391,6 +3394,22 @@
                 syncMarathonUI();
                 return;
             }
+            // Sem número da partida na URL (ex.: /play/online): a partida nova é a que aparece em andamento,
+            // com tabuleiro cheio, sem janela de resultado e sem botão de jogar (no lobby há tabuleiro de enfeite).
+            // Sem isto o estado "próxima partida" nunca saía e o contador não andava.
+            if (!/\/game\/(?:live|daily)\/\d+/.test(location.href)) {
+                if (!gameIsOver() && !findPlayButton() && Object.keys(getBoardPosition()).length >= 2) {
+                    if (++marathonLiveTicks >= 6) {   // ~3 s vendo a partida rodar
+                        marathonLiveTicks = 0;
+                        settings.marathonPending = false;
+                        marathonStartAt = 0;
+                        marathonPendingSince = 0;
+                        saveSettings();
+                        syncMarathonUI();
+                        return;
+                    }
+                } else marathonLiveTicks = 0;
+            }
             // Numa partida já contada: só clica se o site confirmar que ela acabou (senão, o estado é velho)
             if (/\/game\/(?:live|daily)\/\d+/.test(location.href)) {
                 if (now - marathonApiAt > 3000 && !marathonApiBusy) {
@@ -3418,16 +3437,20 @@
         }
 
         // Partida em andamento: vigia o fim (uma vez por partida)
-        if (!/^\d+$/.test(id) || id === settings.marathonLastId) return;
+        // Com número na URL, cada partida é contada uma vez (id diferente do último contado). Sem número
+        // (/play/online), vale a janela de resultado: depois de contar, o estado "próxima partida" segura
+        // a contagem até a partida nova aparecer.
+        const numericId = /^\d+$/.test(id);
+        if (numericId && id === settings.marathonLastId) return;
         // Quem manda é o site (isFinished); só sem resposta dele vale o botão de revisão
-        if (now - marathonApiAt > 3000 && !marathonApiBusy) {
+        if (numericId && now - marathonApiAt > 3000 && !marathonApiBusy) {
             marathonApiAt = now;
             marathonApiBusy = true;
             siteGameFinished(id).then(v => { marathonApiBusy = false; marathonApi = { id, v }; })
                 .catch(() => { marathonApiBusy = false; });
         }
-        const answered = marathonApi.id === id;   // sem resposta do site ainda: não decide
-        const over = answered && marathonApi.v !== false && gameIsOver();   // a janela de resultado é obrigatória
+        const answered = !numericId || marathonApi.id === id;   // sem resposta do site ainda: não decide
+        const over = answered && (!numericId || marathonApi.v !== false) && gameIsOver();   // a janela de resultado é obrigatória
         if (!over) { marathonOverTicks = 0; return; }
         if (++marathonOverTicks < 3) return;   // ~1,5 s vendo o fim, para não contar por engano
         marathonOverTicks = 0;

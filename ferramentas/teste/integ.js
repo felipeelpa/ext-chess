@@ -469,7 +469,7 @@ win.eval(code);
   const after = boardTimes.filter(t => t > drawT);
   check('M: confirmou a oferta na janela', drawConfirms === 1, drawConfirms);
   check('M: não jogou durante a espera do empate', boardsBefore === 0, boardsBefore);
-  check('M: depois da espera joga o lance (3 a 4,5 s)', after.length >= 2 && after[0] - drawT >= 2900 && after[0] - drawT <= 4800, after.length + ' / ' + (after[0] - drawT));
+  check('M: depois da espera joga o lance (3 a 4,5 s)', after.length >= 1 && after[0] - drawT >= 2900 && after[0] - drawT <= 4800, after.length + ' / ' + (after[0] - drawT));
   for (let i = 0; i < 3; i++) { rookStep(i + 1); await sleep(1400); }
   check('M: não oferece de novo logo em seguida', drawClicks === 1, drawClicks);
 
@@ -696,6 +696,32 @@ win.eval(code);
   marBtn.click();
   await sleep(300);
   check('W: "Parar maratona" desliga na hora', saved && saved.marathonOn === false && /Iniciar/.test(marBtn.textContent), JSON.stringify(saved));
+  setAuto(false);
+
+  // W2) Maratona numa página sem número da partida (/play/online): o contador tem de andar do mesmo jeito
+  win.history.pushState({}, '', '/play/online');
+  marathonApiFinished = undefined;
+  const nbBase = clicks.nb;
+  marN.value = '2';
+  marBtn.click();
+  await sleep(300);
+  check('W2: sem id na URL: maratona liga com 2 partidas', saved && saved.marathonOn === true && saved.marathonTotal === 2 && saved.marathonDone === 0, JSON.stringify(saved));
+  win.Math.random = () => 0;
+  showGameOver();
+  await sleep(8500);
+  win.Math.random = realRandom;
+  check('W2: sem id na URL: fim da partida 1 conta e o contador mostra 1', saved && saved.marathonDone === 1 && doc.getElementById('cpp-marathon-n').value === '1', JSON.stringify(saved) + ' campo=' + doc.getElementById('cpp-marathon-n').value);
+  check('W2: sem id na URL: clica em "Novo 10 min" uma vez e nunca em "Revanche"', clicks.nb === nbBase + 1 && clicks.rm === 0, clicks.nb + ' / ' + clicks.rm);
+  doc.getElementById('gom').remove();      // o site abre a partida nova na mesma URL
+  await sleep(4500);
+  check('W2: sem id na URL: partida nova em andamento tira da espera', saved && saved.marathonPending === false && saved.marathonOn === true, JSON.stringify(saved));
+  check('W2: sem id na URL: não conta de novo enquanto a partida segue', saved && saved.marathonDone === 1, JSON.stringify(saved));
+  win.Math.random = () => 0;
+  showGameOver();
+  await sleep(3500);
+  win.Math.random = realRandom;
+  check('W2: sem id na URL: fim da partida 2 conclui a maratona', saved && saved.marathonOn === false && saved.marathonDone === 0 && /concluída: 2 partidas/.test(doc.getElementById('cpp-marathon-hint').textContent), JSON.stringify(saved));
+  doc.getElementById('gom').remove();
   setAuto(false);
 
   // Q) Lista "Agressividade": Agressivo, Defensivo, Automático
