@@ -1,0 +1,148 @@
+/* Chess Analyzer Pro - Popup Styles */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 280px;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #1a1a1a;
+    color: #ffffff;
+}
+
+.container {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* Header */
+.header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
+.header-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.header h1 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: 0.3px;
+}
+
+.version {
+    font-size: 10px;
+    color: #666666;
+    font-weight: 500;
+}
+
+/* Status Bar */
+.status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: #242424;
+    border-radius: 6px;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #666666;
+}
+
+.status-bar.connected .status-dot {
+    background: #22c55e;
+}
+
+.status-bar.disconnected .status-dot,
+.status-bar.error .status-dot {
+    background: #ef4444;
+}
+
+.status-text {
+    font-size: 11px;
+    color: #888888;
+    font-weight: 500;
+}
+
+.status-value {
+    font-size: 11px;
+    color: #aaaaaa;
+}
+
+/* Controls */
+.controls-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.btn {
+    width: 100%;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background: #333333;
+    color: #ffffff;
+}
+
+.btn-primary:not(:disabled):hover {
+    background: #444444;
+}
+
+.btn-primary:not(:disabled):active {
+    background: #555555;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    padding-top: 10px;
+    border-top: 1px solid #2a2a2a;
+}
+
+.footer a {
+    font-size: 10px;
+    color: #888888;
+    text-decoration: underline;
+    transition: color 0.15s ease;
+}
+
+.footer a:hover {
+    color: #22c55e;
+}

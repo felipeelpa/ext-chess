@@ -1,0 +1,35 @@
+{
+   "manifest_version": 3,
+   "name": "Analisador de Xadrez Pro (Jogada Automática)",
+   "version": "1.9.16",
+   "description": "Análise de xadrez em tempo real para o Chess.com, com setas dos melhores lances e jogada automática.",
+   "action": {
+      "default_icon": {
+         "16": "icons/icon16.png",
+         "48": "icons/icon48.png",
+         "128": "icons/icon128.png"
+      },
+      "default_popup": "popup.html"
+   },
+   "content_scripts": [ {
+      "js": [ "visible.js" ],
+      "matches": [ "*://*.chess.com/*" ],
+      "run_at": "document_start",
+      "world": "MAIN"
+   }, {
+      "css": [ "content.css" ],
+      "js": [ "chess-lite.js", "content.js" ],
+      "matches": [ "*://*.chess.com/*" ]
+   } ],
+   "host_permissions": [ "*://*.chess.com/*" ],
+   "icons": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+   },
+   "permissions": [ "storage" ],
+   "web_accessible_resources": [ {
+      "matches": [ "*://*.chess.com/*" ],
+      "resources": [ "stockfish.js", "icons/crown.png" ]
+   } ]
+}

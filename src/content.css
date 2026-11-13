@@ -1,0 +1,742 @@
+/* Analisador de Xadrez Pro - Estilos */
+
+#chess-position-panel {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    width: 300px;
+    max-height: 90vh;
+    background: #1a1a1a;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    z-index: 999999;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    overflow: hidden;
+}
+
+#chess-position-panel.cpp-minimized .cpp-content {
+    display: none;
+}
+
+#chess-position-panel.cpp-minimized .cpp-mini {
+    display: flex;
+}
+
+/* ============= BARRA DE AVALIAÇÃO ============= */
+.cpp-body {
+    display: flex;
+    align-items: stretch;
+}
+
+.cpp-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.cpp-evalbar {
+    position: relative;
+    flex: 0 0 30px;
+    width: 30px;
+    min-height: 120px;
+    background: #3b3b3b;
+    overflow: hidden;
+}
+
+/* Parte do lado do usuário (embaixo); a cor do adversário é o fundo da barra */
+.cpp-evalbar-fill {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 50%;
+    background: #ececec;
+    transition: height 0.4s ease;
+}
+
+.cpp-evalbar-label {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 4px;
+    text-align: center;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 12px;
+    color: #111111;
+    pointer-events: none;
+}
+
+/* Resumo exibido só quando o painel está minimizado */
+.cpp-mini {
+    display: none;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    padding: 12px 14px;
+}
+
+.cpp-mini-score {
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 30px;
+    color: #999999;
+}
+
+.cpp-mini-score.cpp-mini-good {
+    color: #6bcf6b;
+}
+
+.cpp-mini-score.cpp-mini-bad {
+    color: #e07575;
+}
+
+/* Altura fixa: cabem 3 linhas, então a caixa não cresce nem encolhe conforme o texto */
+.cpp-mini-text {
+    font-size: 12px;
+    line-height: 16px;
+    height: 48px;
+    overflow: hidden;
+    color: #aaaaaa;
+}
+
+/* ============= CABEÇALHO ============= */
+.cpp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    background: #242424;
+    cursor: grab;
+    user-select: none;
+}
+
+.cpp-title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cpp-logo {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+.cpp-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: 0.3px;
+}
+
+.cpp-version {
+    font-size: 10px;
+    color: #666666;
+}
+
+.cpp-controls {
+    display: flex;
+    gap: 4px;
+}
+
+.cpp-btn {
+    width: 24px;
+    height: 24px;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: #666666;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease, color 0.15s ease;
+    padding: 0;
+}
+
+.cpp-btn:hover {
+    background: #333333;
+    color: #ffffff;
+}
+
+.cpp-close:hover {
+    background: #ef4444;
+    color: #ffffff;
+}
+
+.cpp-content {
+    padding: 12px;
+    overflow-y: auto;
+    max-height: calc(90vh - 50px);
+}
+
+/* ============= ANÁLISE ============= */
+.cpp-analysis-section {
+    background: #242424;
+    border-radius: 6px;
+    padding: 12px;
+}
+
+.cpp-status-row {
+    height: 20px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.cpp-engine-status {
+    display: inline-block;
+    max-width: 100%;
+    box-sizing: border-box;
+    font-size: 10px;
+    line-height: 14px;
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 3px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Altura fixa: o que vem abaixo nunca sobe nem desce quando o texto muda
+   (avaliação 40 + espaço 8 + melhor lance 34 = 82) */
+.cpp-analysis-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    height: 82px;
+    box-sizing: border-box;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.cpp-no-analysis {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 82px;
+    box-sizing: border-box;
+    font-size: 11px;
+    color: #666666;
+    text-align: center;
+}
+
+.cpp-auto-analyze {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #333333;
+}
+
+.cpp-auto-analyze label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: #888888;
+    cursor: pointer;
+}
+
+.cpp-auto-analyze input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    accent-color: #22c55e;
+    cursor: pointer;
+}
+
+.cpp-check-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+}
+
+.cpp-check-row label {
+    gap: 5px;
+    font-size: 10.5px;
+    white-space: nowrap;
+}
+
+#cpp-human-hint {
+    height: 52px;
+    margin: 8px 0 0 0;
+}
+
+/* ============= CONFIGURAÇÕES ============= */
+.cpp-settings {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #333333;
+}
+
+.cpp-setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.cpp-setting-row label {
+    font-size: 11px;
+    color: #aaaaaa;
+    white-space: nowrap;
+    min-width: 96px;
+}
+
+.cpp-select {
+    flex: 1;
+    min-width: 0;
+    max-width: none;
+    background: #2a2a2a;
+    color: #e5e5e5;
+    border: 1px solid #444444;
+    border-radius: 4px;
+    padding: 3px 6px;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.cpp-select:focus {
+    outline: none;
+    border-color: #22c55e;
+}
+
+.cpp-setting-hint {
+    font-size: 10px;
+    color: #777777;
+    margin: 0 0 10px 0;
+    line-height: 13px;
+    overflow: hidden;
+}
+
+/* Dicas com altura fixa (2 e 3 linhas), para o layout não mexer ao trocar a opção */
+#cpp-depth-hint, #cpp-style-hint {
+    height: 39px;
+}
+
+#cpp-pace-hint {
+    height: 39px;
+}
+
+/* ============= LEGENDA ============= */
+.cpp-legend-section {
+    margin-top: 10px;
+    padding: 10px;
+    background: #222222;
+    border-radius: 6px;
+}
+
+.cpp-legend-title {
+    font-size: 10px;
+    font-weight: 600;
+    color: #666666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.cpp-legend-items {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.cpp-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    color: #888888;
+}
+
+.cpp-legend-icon {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.cpp-legend-arrow {
+    background: #22c55e;
+    clip-path: polygon(0 30%, 60% 30%, 60% 0, 100% 50%, 60% 100%, 60% 70%, 0 70%);
+}
+
+.cpp-legend-hanging {
+    background: #ef4444;
+}
+
+.cpp-legend-defended {
+    background: #f97316;
+}
+
+.cpp-legend-bar {
+    background: linear-gradient(to bottom, #3b3b3b 50%, #ececec 50%);
+    width: 8px;
+    margin: 0 2px;
+}
+
+/* ============= MENSAGEM DE AVALIAÇÃO ============= */
+.cpp-eval-message {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 40px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    padding: 0 12px;
+    border-radius: 6px;
+    background: #2a2a2a;
+}
+
+.cpp-eval-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.cpp-eval-icon:empty {
+    display: none;
+}
+
+.cpp-eval-text {
+    flex: 1;
+    min-width: 0;
+    font-size: 12px;
+    font-weight: 500;
+    color: #cccccc;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cpp-eval-winning {
+    background: #1f2a1f;
+}
+
+.cpp-eval-winning .cpp-eval-text {
+    color: #6bcf6b;
+}
+
+.cpp-eval-good {
+    background: #1f2530;
+}
+
+.cpp-eval-good .cpp-eval-text {
+    color: #7ba8d9;
+}
+
+.cpp-eval-neutral {
+    background: #2a2a2a;
+}
+
+.cpp-eval-neutral .cpp-eval-text {
+    color: #999999;
+}
+
+.cpp-eval-bad {
+    background: #2d2520;
+}
+
+.cpp-eval-bad .cpp-eval-text {
+    color: #d9a066;
+}
+
+.cpp-eval-losing {
+    background: #2d2020;
+}
+
+.cpp-eval-losing .cpp-eval-text {
+    color: #d98080;
+}
+
+.cpp-best-move-display {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: 34px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    font-size: 11px;
+    color: #888888;
+    padding: 0 10px;
+    background: #2a2a2a;
+    border-radius: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.cpp-best-label {
+    color: #666666;
+}
+
+.cpp-best-move {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    color: #22c55e;
+    font-size: 13px;
+}
+
+.cpp-best-eval {
+    color: #666666;
+    font-size: 10px;
+}
+
+/* ============= BARRA DE ROLAGEM ============= */
+.cpp-content::-webkit-scrollbar {
+    width: 5px;
+}
+
+.cpp-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.cpp-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+}
+
+/* ============= SETA DO MELHOR LANCE ============= */
+.cpp-best-move-arrow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.cpp-best-move-arrow svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* ============= RECOLHIDO NA LATERAL ============= */
+#chess-position-panel.cpp-docked {
+    box-sizing: border-box;
+    max-width: 230px;
+    overflow: hidden;
+}
+
+#chess-position-panel.cpp-docked .cpp-header {
+    cursor: default;
+}
+
+#chess-position-panel.cpp-docked .cpp-body {
+    max-width: 100%;
+}
+
+#chess-position-panel.cpp-docked .cpp-mini {
+    min-width: 0;
+    overflow: hidden;
+}
+
+#chess-position-panel.cpp-docked .cpp-header {
+    padding: 8px 10px;
+}
+
+#chess-position-panel.cpp-docked .cpp-title,
+#chess-position-panel.cpp-docked .cpp-header h3,
+#chess-position-panel.cpp-docked .cpp-header-title {
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#chess-position-panel.cpp-docked .cpp-version {
+    display: none;
+}
+
+#chess-position-panel.cpp-docked .cpp-mini {
+    padding: 8px 10px;
+}
+
+#chess-position-panel.cpp-docked .cpp-mini-score {
+    font-size: 22px;
+}
+
+#chess-position-panel.cpp-docked .cpp-title-wrapper {
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* ============= EXPANDIDO: FIXO NA LATERAL, DO TOPO AO RODAPÉ ============= */
+#chess-position-panel.cpp-pinned {
+    left: 8px !important;
+    top: 8px !important;
+    bottom: 8px !important;
+    right: auto !important;
+    width: 300px !important;
+    height: auto !important;
+    max-height: none !important;
+    display: flex;
+    flex-direction: column;
+}
+
+#chess-position-panel.cpp-pinned .cpp-header {
+    cursor: default;
+}
+
+#chess-position-panel.cpp-pinned .cpp-body {
+    flex: 1;
+    min-height: 0;
+}
+
+#chess-position-panel.cpp-pinned .cpp-main {
+    min-height: 0;
+}
+
+#chess-position-panel.cpp-pinned .cpp-content {
+    flex: 1;
+    min-height: 0;
+    max-height: none;
+}
+
+/* Sugestão (modo manual): desistir ou oferecer empate */
+.cpp-eval-suggest {
+    background: #2d2a18;
+}
+
+.cpp-eval-suggest .cpp-eval-text {
+    color: #f0c050;
+    font-weight: 600;
+}
+
+/* ============= PRECISÃO DA PARTIDA ============= */
+.cpp-review-section {
+    margin-top: 10px;
+    padding: 10px;
+    background: #222222;
+    border-radius: 6px;
+}
+
+.cpp-review-btn {
+    width: 100%;
+    background: #2a2a2a;
+    color: #e5e5e5;
+    border: 1px solid #444444;
+    border-radius: 4px;
+    padding: 5px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    margin-bottom: 6px;
+}
+
+.cpp-review-btn:hover:not(:disabled) {
+    border-color: #22c55e;
+}
+
+.cpp-review-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.cpp-marathon-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.cpp-marathon-row label {
+    font-size: 11px;
+    color: #cccccc;
+    min-width: 96px;
+}
+
+.cpp-marathon-n {
+    width: 64px;
+    background: #2a2a2a;
+    color: #e5e5e5;
+    border: 1px solid #444444;
+    border-radius: 4px;
+    padding: 4px 6px;
+    font-size: 12px;
+}
+
+.cpp-marathon-n:disabled {
+    opacity: 0.6;
+}
+
+.cpp-review-line {
+    font-size: 12px;
+    font-weight: 600;
+    color: #e5e5e5;
+    margin-bottom: 4px;
+}
+
+.cpp-review-sub {
+    font-size: 10px;
+    color: #999999;
+    line-height: 14px;
+}
+
+/* Controles que ficam visíveis com o painel recolhido */
+.cpp-mini-btn {
+    width: 100%;
+    background: #2a2a2a;
+    color: #e5e5e5;
+    border: 1px solid #444444;
+    border-radius: 4px;
+    padding: 4px 6px;
+    font-size: 11px;
+    cursor: pointer;
+    margin-top: 4px;
+}
+
+.cpp-mini-btn:hover {
+    border-color: #22c55e;
+}
+
+.cpp-mini-btn.on {
+    background: #1f3d29;
+    border-color: #22c55e;
+    color: #8be28b;
+}
+
+.cpp-mini-mar {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.cpp-mini-mar .cpp-marathon-n {
+    width: 44px;
+    flex: none;
+    margin-top: 4px;
+    padding: 3px 4px;
+    font-size: 11px;
+}
+
+.cpp-mini-mar .cpp-mini-btn {
+    flex: 1;
+    min-width: 0;
+}
+
+.cpp-mini-hint {
+    display: block;
+    font-size: 10px;
+    color: #999999;
+    line-height: 13px;
+    height: 26px;      /* 2 linhas reservadas, mesmo vazio */
+    overflow: hidden;
+}
+
+.cpp-mini-mar .cpp-mini-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.cpp-mini-play {
+    color: #6bcf6b;
+}
+
+.cpp-mini-stop {
+    color: #e07575;
+}

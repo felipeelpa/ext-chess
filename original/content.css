@@ -1,0 +1,774 @@
+/* Chess.com Position Analyzer Pro - Styles */
+
+#chess-position-panel {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    width: 280px;
+    max-height: 90vh;
+    background: #1a1a1a;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    z-index: 999999;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    overflow: hidden;
+}
+
+#chess-position-panel.cpp-minimized .cpp-content {
+    display: none;
+}
+
+/* ============= HEADER ============= */
+.cpp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    background: #242424;
+    cursor: grab;
+    user-select: none;
+}
+
+.cpp-title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cpp-logo {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+}
+
+.cpp-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: 0.3px;
+}
+
+.cpp-controls {
+    display: flex;
+    gap: 4px;
+}
+
+.cpp-btn {
+    width: 24px;
+    height: 24px;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: #666666;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease, color 0.15s ease;
+    padding: 0;
+}
+
+.cpp-btn:hover {
+    background: #333333;
+    color: #ffffff;
+}
+
+.cpp-close:hover {
+    background: #ef4444;
+    color: #ffffff;
+}
+
+.cpp-content {
+    padding: 12px;
+    overflow-y: auto;
+    max-height: calc(90vh - 50px);
+}
+
+/* ============= ANALYSIS SECTION ============= */
+.cpp-analysis-section {
+    background: #242424;
+    border-radius: 6px;
+    padding: 12px;
+}
+
+.cpp-analysis-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.cpp-section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #22c55e;
+}
+
+.cpp-section-title-small {
+    font-size: 12px;
+    font-weight: 600;
+    color: #94a3b8;
+    margin-bottom: 8px;
+}
+
+.cpp-engine-status {
+    font-size: 10px;
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 3px 8px;
+    border-radius: 10px;
+}
+
+.cpp-analysis-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.cpp-analyze-btn {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
+    color: white !important;
+    font-weight: 600 !important;
+    padding: 8px 14px !important;
+    font-size: 12px !important;
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.cpp-analyze-btn:hover {
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+    transform: translateY(-1px) scale(1) !important;
+}
+
+.cpp-depth-control {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #94a3b8;
+    flex: 1;
+}
+
+.cpp-depth-control input[type="range"] {
+    flex: 1;
+    height: 4px;
+    -webkit-appearance: none;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    outline: none;
+}
+
+.cpp-depth-control input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    background: #22c55e;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.cpp-depth-value {
+    color: #22c55e;
+    font-weight: 600;
+    min-width: 18px;
+}
+
+.cpp-analysis-depth {
+    font-size: 10px;
+    color: #64748b;
+    margin-bottom: 8px;
+}
+
+/* ============= ANALYSIS LINES (Multi-PV) ============= */
+.cpp-analysis-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.cpp-no-analysis {
+    font-size: 11px;
+    color: #666666;
+    text-align: center;
+    padding: 12px;
+}
+
+.cpp-auto-analyze {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #333333;
+}
+
+.cpp-auto-analyze label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: #888888;
+    cursor: pointer;
+}
+
+.cpp-auto-analyze input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    accent-color: #22c55e;
+    cursor: pointer;
+}
+
+/* ============= LEGEND SECTION ============= */
+.cpp-legend-section {
+    margin-top: 10px;
+    padding: 10px;
+    background: #222222;
+    border-radius: 6px;
+}
+
+.cpp-legend-title {
+    font-size: 10px;
+    font-weight: 600;
+    color: #666666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.cpp-legend-items {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.cpp-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    color: #888888;
+}
+
+.cpp-legend-icon {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.cpp-legend-arrow {
+    background: #22c55e;
+    clip-path: polygon(0 30%, 60% 30%, 60% 0, 100% 50%, 60% 100%, 60% 70%, 0 70%);
+}
+
+.cpp-legend-hanging {
+    background: #ef4444;
+}
+
+.cpp-legend-defended {
+    background: #f97316;
+}
+
+/* ============= EVALUATION MESSAGE ============= */
+.cpp-eval-message {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    background: #2a2a2a;
+}
+
+.cpp-eval-icon {
+    font-size: 16px;
+}
+
+.cpp-eval-text {
+    font-size: 12px;
+    font-weight: 500;
+    color: #cccccc;
+}
+
+.cpp-eval-winning {
+    background: #1f2a1f;
+}
+
+.cpp-eval-winning .cpp-eval-text {
+    color: #6bcf6b;
+}
+
+.cpp-eval-good {
+    background: #1f2530;
+}
+
+.cpp-eval-good .cpp-eval-text {
+    color: #7ba8d9;
+}
+
+.cpp-eval-neutral {
+    background: #2a2a2a;
+}
+
+.cpp-eval-neutral .cpp-eval-text {
+    color: #999999;
+}
+
+.cpp-eval-bad {
+    background: #2d2520;
+}
+
+.cpp-eval-bad .cpp-eval-text {
+    color: #d9a066;
+}
+
+.cpp-eval-losing {
+    background: #2d2020;
+}
+
+.cpp-eval-losing .cpp-eval-text {
+    color: #d98080;
+}
+
+.cpp-best-move-display {
+    font-size: 11px;
+    color: #888888;
+    padding: 8px 10px;
+    background: #2a2a2a;
+    border-radius: 6px;
+}
+
+.cpp-best-label {
+    color: #666666;
+}
+
+.cpp-best-move {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    color: #22c55e;
+    font-size: 13px;
+}
+
+.cpp-best-eval {
+    color: #666666;
+    font-size: 10px;
+}
+
+.cpp-analysis-line-item {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 8px 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+}
+
+.cpp-analysis-line-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.cpp-analysis-line-item.cpp-best-line {
+    border-left-color: #22c55e;
+    background: rgba(34, 197, 94, 0.1);
+}
+
+.cpp-line-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.cpp-line-rank {
+    width: 18px;
+    height: 18px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: #94a3b8;
+}
+
+.cpp-best-line .cpp-line-rank {
+    background: #22c55e;
+    color: white;
+}
+
+.cpp-line-move {
+    font-size: 15px;
+    font-weight: 700;
+    color: #e2e8f0;
+    font-family: 'Courier New', monospace;
+    flex: 1;
+}
+
+.cpp-best-line .cpp-line-move {
+    color: #22c55e;
+}
+
+.cpp-line-score {
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+}
+
+.cpp-line-score.cpp-score-good {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+.cpp-line-score.cpp-score-bad {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.cpp-line-pv {
+    font-size: 10px;
+    color: #64748b;
+    font-family: 'Courier New', monospace;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cpp-auto-analyze {
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+.cpp-auto-analyze label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.cpp-auto-analyze input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    accent-color: #22c55e;
+}
+
+/* ============= SAFETY SECTION ============= */
+.cpp-safety-section {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 12px;
+}
+
+.cpp-safety-legend {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.cpp-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    color: #64748b;
+}
+
+.cpp-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.cpp-dot.cpp-hanging {
+    background: #ef4444;
+}
+
+.cpp-dot.cpp-defended {
+    background: #f97316;
+}
+
+.cpp-dot.cpp-safe {
+    background: #22c55e;
+}
+
+.cpp-safety-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.cpp-safety-ok {
+    font-size: 12px;
+    color: #22c55e;
+    text-align: center;
+    padding: 8px;
+}
+
+.cpp-safety-group {
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.cpp-hanging-group {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.cpp-defended-group {
+    background: rgba(249, 115, 22, 0.1);
+    border: 1px solid rgba(249, 115, 22, 0.3);
+}
+
+.cpp-safety-label {
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.cpp-hanging-group .cpp-safety-label {
+    color: #ef4444;
+}
+
+.cpp-defended-group .cpp-safety-label {
+    color: #f97316;
+}
+
+.cpp-safety-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.cpp-safety-piece {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: help;
+}
+
+.cpp-safety-piece.cpp-hanging {
+    background: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.cpp-safety-piece.cpp-defended {
+    background: rgba(249, 115, 22, 0.2);
+    color: #fdba74;
+    border: 1px solid rgba(249, 115, 22, 0.4);
+}
+
+/* ============= BOARD SECTION ============= */
+.cpp-board-section {
+    margin-bottom: 12px;
+}
+
+.cpp-board-header {
+    margin-bottom: 6px;
+}
+
+.cpp-orientation-label {
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+.cpp-board-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 1px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.cpp-square {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.cpp-light {
+    background: linear-gradient(135deg, #f0d9b5 0%, #e8c99b 100%);
+}
+
+.cpp-dark {
+    background: linear-gradient(135deg, #b58863 0%, #a37a56 100%);
+}
+
+/* Attack/Defense highlighting on board */
+.cpp-sq-hanging {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important;
+    animation: cpp-pulse-red 1s infinite;
+}
+
+.cpp-sq-defended {
+    background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important;
+}
+
+@keyframes cpp-pulse-red {
+
+    0%,
+    100% {
+        box-shadow: inset 0 0 0 2px rgba(255, 0, 0, 0.8);
+    }
+
+    50% {
+        box-shadow: inset 0 0 0 2px rgba(255, 0, 0, 0.3);
+    }
+}
+
+.cpp-piece {
+    font-size: 20px;
+    line-height: 1;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.cpp-piece.white-piece {
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.cpp-piece.black-piece {
+    color: #1a1a1a;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.2);
+}
+
+/* ============= PIECES LIST ============= */
+.cpp-pieces-list {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.cpp-color-group {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.cpp-color-title {
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cpp-white-title {
+    color: #f1f5f9;
+}
+
+.cpp-black-title {
+    color: #94a3b8;
+}
+
+.cpp-pieces-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4px;
+}
+
+.cpp-piece-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px 3px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    cursor: default;
+    position: relative;
+}
+
+.cpp-piece-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+}
+
+/* Piece status in list */
+.cpp-piece-item.cpp-piece-hanging {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.cpp-piece-item.cpp-piece-defended {
+    background: rgba(249, 115, 22, 0.15);
+    border: 1px solid rgba(249, 115, 22, 0.3);
+}
+
+.cpp-piece-symbol {
+    font-size: 18px;
+    line-height: 1;
+    margin-bottom: 2px;
+}
+
+.cpp-piece-symbol.white-piece {
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.cpp-piece-symbol.black-piece {
+    color: #64748b;
+}
+
+.cpp-piece-square {
+    font-size: 9px;
+    font-weight: 600;
+    color: #60a5fa;
+    background: rgba(96, 165, 250, 0.15);
+    padding: 1px 5px;
+    border-radius: 3px;
+}
+
+.cpp-piece-status {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    font-size: 10px;
+}
+
+/* ============= SCROLLBAR ============= */
+.cpp-content::-webkit-scrollbar {
+    width: 5px;
+}
+
+.cpp-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.cpp-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+}
+
+/* ============= BEST MOVE ARROW ============= */
+.cpp-best-move-arrow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.cpp-best-move-arrow svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+}

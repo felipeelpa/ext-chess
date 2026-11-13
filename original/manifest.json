@@ -1,0 +1,32 @@
+{
+   "action": {
+      "default_icon": {
+         "128": "icons/icon128.png",
+         "16": "icons/icon16.png",
+         "48": "icons/icon48.png"
+      },
+      "default_popup": "popup.html"
+   },
+   "content_scripts": [ {
+      "css": [ "content.css" ],
+      "js": [ "content.js" ],
+      "matches": [ "*://*.chess.com/*" ]
+   } ],
+   "description": "Real-time chess analysis for Chess.com with best move arrows and auto-move functionality",
+   "host_permissions": [ "*://*.chess.com/*" ],
+   "icons": {
+      "128": "icons/icon128.png",
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png"
+   },
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuWMgLao7/q/bBVBnyM2H/XWz0FoSAFItkk9M3PVVs2C+pF2pKLTW8DO94r/2KhTayjBwAdiDXa357cng84jAf6MNT9ilK1mWFfo/nb3rpOkAgK9JF/DnN5Oj21d/LRG1ft535/LQPmksAgTAnPyz7CtyM7PvXaG6dq4QjPWWYMtJ9SLy/cbGFeG06vgaLI+qJ80bpyAkDrfd+zPFywuaNtb84x4EKEdEBuLen2lG6aknz07ybRC8wkQI8AeCvGHmowe5cfQEd93jXwgJ/vTBWLdLGjw9bX/keZbpAilm7nxqC3W/z0lTO9+yCmuF5Rd44UsB3kOJ/UVG/mWHWDj7xwIDAQAB",
+   "manifest_version": 3,
+   "name": "Chess Analyzer Pro (Auto Move)",
+   "permissions": [  ],
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "1.0.0",
+   "web_accessible_resources": [ {
+      "matches": [ "*://*.chess.com/*" ],
+      "resources": [ "stockfish.js", "icons/crown.png" ]
+   } ]
+}
