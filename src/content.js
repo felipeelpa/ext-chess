@@ -723,10 +723,6 @@
                     }
 
                     updateEngineStatus('Concluído');
-                    displayAnalysisLines();
-                    if (currentLines.length > 0) {
-                        highlightAnalysisMoves(currentLines);
-                    }
 
                     // Auto Move Logic (com tempo de "pensar" proporcional à dificuldade)
                     const moveMatch = msg.match(/bestmove\s+(\S+)/);
@@ -743,8 +739,11 @@
                         lastPlan = engineBest ? planCandidates(engineBest) : null;
                         lastBestMove = engineBest ? chooseMoveWithErrors(engineBest, currentRating(), Math.random, lastPlan) : null;
                     }
-                    // Setas = os mesmos três lances que a jogada automática pode jogar
+                    // Setas = os mesmos três lances que a jogada automática pode jogar. Só aparecem
+                    // aqui, no fim da busca: durante ela nada é redesenhado, para as sugestões não
+                    // ficarem trocando na tela a cada profundidade.
                     if (lastPlan) highlightAnalysisMoves(planArrowLines(lastPlan));
+                    else if (currentLines.length > 0) highlightAnalysisMoves(currentLines);
                     updateResignStreak();
                     updateDrawStreak();
                     displayAnalysisLines();   // com as contagens novas, mostra a sugestão (modo manual)
@@ -819,13 +818,8 @@
             updateEngineStatus(`Pensando... prof. ${depth}/${analysisDepth}`);
         }
 
-        // Atualiza a tela ao vivo a cada variante, mesmo que ainda não seja a principal
-        displayAnalysisLines();
-
-        // Destaca os lances conforme mudam
-        if (currentLines.length > 0) {
-            highlightAnalysisMoves(currentLines);
-        }
+        // Nada de redesenhar a cada linha do motor: setas, "Melhor lance" e barra só mudam quando a
+        // busca termina (bestmove). Antes eles trocavam a cada profundidade e deixavam tudo piscando.
     }
 
     let oldDepth = 0;

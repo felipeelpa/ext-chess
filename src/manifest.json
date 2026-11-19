@@ -1,7 +1,7 @@
 {
    "manifest_version": 3,
    "name": "Analisador de Xadrez Pro (Jogada Automática)",
-   "version": "1.9.16",
+   "version": "1.9.17",
    "description": "Análise de xadrez em tempo real para o Chess.com, com setas dos melhores lances e jogada automática.",
    "action": {
       "default_icon": {
