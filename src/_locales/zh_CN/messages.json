@@ -1,0 +1,8 @@
+{
+  "extName": {
+    "message": "国际象棋分析器 Pro"
+  },
+  "extDesc": {
+    "message": "在 Chess.com 上使用 Stockfish：用箭头显示最佳着法，并可自动走棋。适合与电脑对手练习，风险自负。"
+  }
+}

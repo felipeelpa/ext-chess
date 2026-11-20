@@ -1,0 +1,8 @@
+{
+  "extName": {
+    "message": "Analisador de Xadrez Pro"
+  },
+  "extDesc": {
+    "message": "Stockfish no Chess.com: setas com os melhores lances e jogada automática. Para treinar contra bots. Uso por sua conta e risco."
+  }
+}

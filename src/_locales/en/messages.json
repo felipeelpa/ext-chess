@@ -1,0 +1,8 @@
+{
+  "extName": {
+    "message": "Chess Analyzer Pro"
+  },
+  "extDesc": {
+    "message": "Stockfish on Chess.com: arrows for the best moves and optional auto-play. Meant for practice against bots. Use at your own risk."
+  }
+}

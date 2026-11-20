@@ -1,0 +1,69 @@
+# Publica a extensão na Chrome Web Store quando um push em main sobe a VERSÃO do manifesto.
+#
+# Como a atualização chega aos usuários: o Chrome só atualiza sozinho extensões que vêm da loja.
+# Este fluxo envia o pacote novo para a loja; depois que o Google aprova (a revisão é dele, pode levar
+# de horas a alguns dias), o navegador de quem instalou atualiza sem ninguém fazer nada.
+#
+# Só roda se:
+#   1. algum arquivo de src/ mudou;
+#   2. o campo "version" de src/manifest.json é diferente do commit anterior (a loja recusa a mesma versão);
+#   3. os 4 segredos do repositório estiverem preenchidos (veja loja/COMO-PUBLICAR.md).
+# Sem os segredos, ele só gera o pacote e avisa — não falha.
+
+name: Publicar na Chrome Web Store
+
+on:
+  push:
+    branches: [main]
+    paths: ['src/**']
+  workflow_dispatch:
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Gerar o pacote (e conferir o manifesto)
+        run: node ferramentas/empacotar.mjs
+
+      - name: A versão subiu?
+        id: versao
+        run: |
+          NOVA=$(node -p "require('./src/manifest.json').version")
+          ANTES=$(git show HEAD^:src/manifest.json 2>/dev/null | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{try{console.log(JSON.parse(s).version)}catch(e){console.log('')}})" || true)
+          echo "versão antes: '$ANTES' | agora: '$NOVA'"
+          if [ "$NOVA" != "$ANTES" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "subiu=sim" >> "$GITHUB_OUTPUT"
+          else
+            echo "subiu=nao" >> "$GITHUB_OUTPUT"
+            echo "A versão não mudou: nada para publicar. Suba o número em src/manifest.json."
+          fi
+
+      - name: Enviar para a loja
+        if: steps.versao.outputs.subiu == 'sim'
+        env:
+          EXTENSION_ID: ${{ secrets.CWS_EXTENSION_ID }}
+          CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.CWS_REFRESH_TOKEN }}
+        run: |
+          if [ -z "$EXTENSION_ID" ] || [ -z "$CLIENT_ID" ] || [ -z "$CLIENT_SECRET" ] || [ -z "$REFRESH_TOKEN" ]; then
+            echo "Segredos da loja não configurados: só gerei o pacote. Veja loja/COMO-PUBLICAR.md."
+            exit 0
+          fi
+          ZIP=$(ls dist/chess-analyzer-pro-*.zip | head -n 1)
+          npx --yes chrome-webstore-upload-cli@3 upload --source "$ZIP"
+          npx --yes chrome-webstore-upload-cli@3 publish
+
+      - name: Guardar o pacote
+        uses: actions/upload-artifact@v4
+        with:
+          name: pacote-da-loja
+          path: dist/*.zip

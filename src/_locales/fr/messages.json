@@ -1,0 +1,8 @@
+{
+  "extName": {
+    "message": "Analyseur d'Échecs Pro"
+  },
+  "extDesc": {
+    "message": "Stockfish sur Chess.com : flèches des meilleurs coups et jeu automatique. Pour s'entraîner contre des bots. À vos risques."
+  }
+}

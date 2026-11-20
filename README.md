@@ -102,3 +102,22 @@ node build_visual.js ../../src    # gera visual.html
 O `calibra.js` existe para manter isso honesto com a régua: simula partidas de
 cada rating e mede a precisão média pela fórmula do Lichess — rating 800 fica
 na faixa de 60-70%, e o rating máximo acima de 90%.
+
+---
+
+## Publicar e atualizar (Chrome Web Store)
+
+O Chrome só atualiza sozinho o que vem da loja, então o fluxo é: mudar o código → subir a versão em
+`src/manifest.json` → `git push` → o GitHub envia o pacote à loja → o Google aprova → o navegador de cada
+usuário atualiza sozinho. Passo a passo, segredos do GitHub e cuidados: [loja/COMO-PUBLICAR.md](loja/COMO-PUBLICAR.md).
+
+| O quê | Onde |
+|---|---|
+| Gerar o .zip da loja | `node ferramentas/empacotar.mjs` → `dist/` |
+| Envio automático | `.github/workflows/publicar.yml` |
+| Textos da loja em 7 idiomas (com o aviso de uso) | [loja/descricao.md](loja/descricao.md) |
+| Política de privacidade | [loja/privacidade.md](loja/privacidade.md) |
+
+> **Aviso de uso.** Feita para melhorar o desempenho contra **bots**, treino e análise. Usar motor ou jogada
+> automática contra pessoas viola os Termos de Uso e a política de jogo limpo do Chess.com. Uso por conta e
+> risco do usuário; o uso indevido pode levar ao banimento da conta.
