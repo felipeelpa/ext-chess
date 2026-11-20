@@ -25,6 +25,9 @@
     let stockfishWorker = null;
     let isEngineReady = false;
     let isAnalyzing = false;
+    // Tradução: textos da interface vêm de i18n.js (português é o padrão)
+    const tr = (k, v) => (window.I18N ? window.I18N.t(k, v) : k);
+    const trSec = (ms) => (window.I18N ? window.I18N.num(ms / 1000, 1) : (ms / 1000).toFixed(1));
     let panelClosedByUser = false;
     let extEnabled = true;            // interruptor geral (ícone da extensão no navegador)
     let lastEngineMsgAt = 0;         // última mensagem recebida do motor (detecta motor travado)
@@ -141,43 +144,43 @@
     const MAX_DEPTH = 20;
 
     function ratingLabel(r) {
-        if (r < 1000) return 'Iniciante';
-        if (r < 1400) return 'Casual';
-        if (r < 1800) return 'Intermediário';
-        if (r < 2200) return 'Avançado';
-        if (r < 2500) return 'Mestre';
-        if (r < 2800) return 'Grande Mestre';
-        return 'Nível de motor';
+        if (r < 1000) return tr('r.beginner');
+        if (r < 1400) return tr('r.casual');
+        if (r < 1800) return tr('r.intermediate');
+        if (r < 2200) return tr('r.advanced');
+        if (r < 2500) return tr('r.master');
+        if (r < 2800) return tr('r.gm');
+        return tr('r.engine');
     }
 
     // Ritmo da jogada automática.
     //  - inteligente: o tempo depende da dificuldade do lance (óbvio = rápido, difícil = demora mais)
     //  - rápido / normal / calmo: tempo médio fixo em segundos (com pequena variação aleatória)
     const PACE_OPTIONS = [
-        { value: 'smart', label: 'Inteligente' },
-        { value: 'fast', label: 'Rápido' },
-        { value: 'normal', label: 'Normal' },
-        { value: 'calm', label: 'Calmo' }
+        { value: 'smart', get label() { return tr('pace.smart'); } },
+        { value: 'fast', get label() { return tr('pace.fast'); } },
+        { value: 'normal', get label() { return tr('pace.normal'); } },
+        { value: 'calm', get label() { return tr('pace.calm'); } }
     ];
     // O tempo de cada lance depende do tipo de partida (bullet, blitz ou rápida), lido do relógio.
     // O ritmo escolhido só multiplica esse tempo.
     const PACE_FACTOR = { smart: 1, fast: 0.6, normal: 1, calm: 1.8 };
     const PACE_HINTS = {
-        smart: 'Lê o tipo de partida (bullet, blitz, rápida). Lances simples e erros saem rápido; só um lance excelente demora mais.',
-        fast: 'Mais rápido que o normal para o tipo de partida (bullet, blitz, rápida).',
-        normal: 'Tempo normal para o tipo de partida (bullet, blitz, rápida), com variação aleatória.',
-        calm: 'Mais calmo que o normal para o tipo de partida (bullet, blitz, rápida).'
+        get smart() { return tr('pace.hint.smart'); },
+        get fast() { return tr('pace.hint.fast'); },
+        get normal() { return tr('pace.hint.normal'); },
+        get calm() { return tr('pace.hint.calm'); }
     };
 
     const STYLE_OPTIONS = [
-        { value: 'aggressive', label: 'Agressivo' },
-        { value: 'defensive', label: 'Defensivo' },
-        { value: 'auto', label: 'Automático' }
+        { value: 'aggressive', get label() { return tr('style.aggressive'); } },
+        { value: 'defensive', get label() { return tr('style.defensive'); } },
+        { value: 'auto', get label() { return tr('style.auto'); } }
     ];
     const STYLE_HINTS = {
-        aggressive: 'Foco em capturar (troca também vale) e atacar peças, entre os lances quase tão bons quanto o melhor.',
-        defensive: 'Foco em não perder peça: protege, evita trocas, roca e busca casas seguras, entre os lances quase tão bons quanto o melhor.',
-        auto: 'Muda conforme a partida: à frente, ataca; atrás, defende; igualado, joga o melhor lance.'
+        get aggressive() { return tr('style.hint.aggressive'); },
+        get defensive() { return tr('style.hint.defensive'); },
+        get auto() { return tr('style.hint.auto'); }
     };
     const DEFAULT_SETTINGS = { depth: 12, autoMove: false, pace: 'smart', humanMode: false, style: 'auto',
         marathonOn: false, marathonTotal: 15, marathonDone: 0, marathonPending: false, marathonLastId: '' };
@@ -314,9 +317,10 @@
     }
 
     function autoDepthSummary() {
-        const letters = { w: 'V', d: 'E', l: 'D' };
-        const h = historyResults && historyResults.length ? historyResults.slice(0, 8).map(x => letters[x]).join('') : 'sem partidas ainda';
-        return `Prof. ${analysisDepth} (≈ ${DEPTH_RATINGS[analysisDepth]}) pelo histórico (${h}) e pela partida.`;
+        const L = tr('dep.letters').split('|');
+        const letters = { w: L[0], d: L[1], l: L[2] };
+        const h = historyResults && historyResults.length ? historyResults.slice(0, 8).map(x => letters[x]).join('') : tr('dep.none');
+        return tr('dep.summary', { d: analysisDepth, r: DEPTH_RATINGS[analysisDepth], h });
     }
 
     // Recalcula a profundidade automática (antes de cada análise e quando o histórico chega)
@@ -673,9 +677,9 @@
         stockfishWorker = null;
         cancelPendingMove();
         document.querySelectorAll('.cpp-best-move-arrow, .cpp-hanging-overlay').forEach(el => el.remove());
-        updateEngineStatus('Extensão atualizada: recarregue a página (F5)');
+        updateEngineStatus(tr('e.extUpdated'));
         const container = document.querySelector('.cpp-analysis-lines');
-        if (container) container.innerHTML = '<div class="cpp-no-analysis">Extensão atualizada.<br>Aperte F5 nesta página.</div>';
+        if (container) container.innerHTML = '<div class="cpp-no-analysis">' + tr('e.extUpdatedBox') + '</div>';
     }
 
     async function initStockfish() {
@@ -684,7 +688,7 @@
         engineLoading = true;
 
         try {
-            updateEngineStatus('Carregando motor...');
+            updateEngineStatus(tr('e.loading'));
 
             // Carrega o stockfish.js e cria o worker a partir dele
             // (o endereço do motor é guardado, para recriá-lo sem baixar o arquivo de novo)
@@ -708,7 +712,7 @@
                     stockfishWorker.postMessage('isready');
                 } else if (msg === 'readyok') {
                     isEngineReady = true;
-                    updateEngineStatus('Pronto');
+                    updateEngineStatus(tr('e.ready'));
                 } else if (msg.includes('info') && msg.includes('depth') && msg.includes('pv')) {
                     // Linhas "info" com a variante principal
                     parseEngineInfo(msg);
@@ -722,7 +726,7 @@
                         return;
                     }
 
-                    updateEngineStatus('Concluído');
+                    updateEngineStatus(tr('e.done'));
 
                     // Auto Move Logic (com tempo de "pensar" proporcional à dificuldade)
                     const moveMatch = msg.match(/bestmove\s+(\S+)/);
@@ -756,7 +760,7 @@
             stockfishWorker.onerror = (e) => {
                 if (e && e.preventDefault) e.preventDefault();
                 console.log('Erro no motor Stockfish:', e);
-                updateEngineStatus('Erro');
+                updateEngineStatus(tr('e.error'));
                 // Motor morto: sobe outro em seguida (senão a análise ficaria parada para sempre)
                 timers.setTimeout(() => restartEngine('erro no worker'), 500);
             };
@@ -775,7 +779,7 @@
             if (!extensionAlive()) {
                 handleOrphan();
             } else {
-                updateEngineStatus('Falha ao carregar o motor, tentando de novo...');
+                updateEngineStatus(tr('e.loadFail'));
                 timers.setTimeout(initStockfish, 3000);   // tenta de novo sozinho
             }
         } finally {
@@ -815,7 +819,7 @@
         // Mostra o progresso da análise (profundidade atual / profundidade escolhida)
         if (depth > oldDepth) {
             oldDepth = depth;
-            updateEngineStatus(`Pensando... prof. ${depth}/${analysisDepth}`);
+            updateEngineStatus(tr('e.thinkingDepth', { d: depth, m: analysisDepth }));
         }
 
         // Nada de redesenhar a cada linha do motor: setas, "Melhor lance" e barra só mudam quando a
@@ -964,7 +968,7 @@
         const btn = findResignButton();
         if (!btn) {
             console.log('[Jogada automática] Botão de abandonar não encontrado; jogando o melhor lance.');
-            updateEngineStatus('Sem botão de abandonar');
+            updateEngineStatus(tr('e.noResignBtn'));
             if (lastBestMove) scheduleAutoMove(lastBestMove);
             return;
         }
@@ -983,7 +987,7 @@
         if (remaining !== null) sec = Math.min(sec, Math.max(1, remaining * 0.2));
         const fenAtSchedule = currentAnalysisFEN;
         const wait = Math.max(300, sec * 1000 - (Date.now() - analysisStartedAt));
-        updateEngineStatus(`Desistindo em ${(wait / 1000).toFixed(1).replace('.', ',')} s`);
+        updateEngineStatus(tr('e.resigning', { s: trSec(wait) }));
 
         pendingMoveTimer = timers.setTimeout(() => {
             pendingMoveTimer = null;
@@ -1092,7 +1096,7 @@
         timers.setTimeout(() => confirmDrawOffer(1, btn), 500);
         const fenAtOffer = currentAnalysisFEN;
         const wait = 3000 + Math.random() * 1000;
-        updateEngineStatus(`Empate oferecido, aguardando ${(wait / 1000).toFixed(1).replace('.', ',')} s`);
+        updateEngineStatus(tr('e.drawOffered', { s: trSec(wait) }));
         pendingMoveTimer = timers.setTimeout(() => {
             pendingMoveTimer = null;
             if (!autoMoveEnabled) return;
@@ -1132,7 +1136,7 @@
         const btn = findDrawAcceptButton();
         if (!btn || !shouldAcceptDraw()) return;
         const wait = 1200 + Math.random() * 2300;
-        updateEngineStatus(`Aceitando empate em ${(wait / 1000).toFixed(1).replace('.', ',')} s`);
+        updateEngineStatus(tr('e.acceptDraw', { s: trSec(wait) }));
         drawAcceptTimer = timers.setTimeout(() => {
             drawAcceptTimer = null;
             if (!autoMoveEnabled) return;
@@ -1149,10 +1153,10 @@
         if (!ev || !currentLines[0]) return null;
         if (isLostPosition()) {
             const grave = ev.type === 'mate' || userEvalValue() <= RESIGN_IMMEDIATE_CP;
-            if (grave || resignStreak >= RESIGN_CONFIRMATIONS) return { kind: 'resign', text: 'Sugestão: desistir' };
+            if (grave || resignStreak >= RESIGN_CONFIRMATIONS) return { kind: 'resign', text: tr('a.sugResign') };
         }
         if (timeControlKind() !== 'bullet' && drawStreak >= drawNeeded && isEqualEndgame()) {
-            return { kind: 'draw', text: 'Sugestão: oferecer empate' };
+            return { kind: 'draw', text: tr('a.sugDraw') };
         }
         return null;
     }
@@ -1821,7 +1825,7 @@
         const fenAtSchedule = currentAnalysisFEN;
         const elapsed = Date.now() - analysisStartedAt; // o tempo do motor já conta como "pensando"
         const wait = Math.max(150, computeThinkTime(bestMove) - elapsed);
-        updateEngineStatus(`Jogando em ${(wait / 1000).toFixed(1).replace('.', ',')} s`);
+        updateEngineStatus(tr('e.playingIn', { s: trSec(wait) }));
 
         pendingMoveTimer = timers.setTimeout(() => {
             pendingMoveTimer = null;
@@ -1839,17 +1843,17 @@
         for (const [sq, p] of Object.entries(positions)) {
             count[p.color]++;
             if (p.type === 'wk' || p.type === 'bk' || p.type === 'wp' || p.type === 'bp') count[p.type]++;
-            if (p.type[1] === 'p' && (sq[1] === '1' || sq[1] === '8')) return 'peão na fileira ' + sq[1];
+            if (p.type[1] === 'p' && (sq[1] === '1' || sq[1] === '8')) return tr('e.badPawn', { r: sq[1] });
         }
-        if (count.wk !== 1 || count.bk !== 1) return 'reis: ' + count.wk + ' branco(s), ' + count.bk + ' preto(s)';
-        if (count.wp > 8 || count.bp > 8 || count.w > 16 || count.b > 16) return 'peças demais';
+        if (count.wk !== 1 || count.bk !== 1) return tr('e.badKings', { w: count.wk, b: count.bk });
+        if (count.wp > 8 || count.bp > 8 || count.w > 16 || count.b > 16) return tr('e.badMany');
 
         const turn = fen.split(' ')[1];
         const waiting = turn === 'w' ? 'b' : 'w';
         const kingSq = Object.keys(positions).find(s => positions[s].type === waiting + 'k');
         for (const [sq, p] of Object.entries(positions)) {
             if (p.color !== turn) continue;
-            if (getAttackedSquares(positions, sq, p).includes(kingSq)) return 'rei em xeque fora da vez';
+            if (getAttackedSquares(positions, sq, p).includes(kingSq)) return tr('e.badCheck');
         }
         return '';
     }
@@ -1875,7 +1879,7 @@
         lastFEN = '';
         currentAnalysisFEN = '';
         cancelPendingMove();
-        updateEngineStatus('Reiniciando motor...');
+        updateEngineStatus(tr('e.restarting'));
         initStockfish();
         timers.setTimeout(analyzePosition, 1500);
     }
@@ -1890,14 +1894,14 @@
 
         const positions = getBoardPosition();
         if (Object.keys(positions).length === 0) {
-            updateEngineStatus('Sem tabuleiro');
+            updateEngineStatus(tr('e.noBoard'));
             return;
         }
 
         const fen = positionToFEN(positions);
         const badReason = unsafeReason(positions, fen);
         if (badReason) {
-            updateEngineStatus('Aguardando o tabuleiro (' + badReason + ')');
+            updateEngineStatus(tr('e.waitBoard', { r: badReason }));
             return;
         }
 
@@ -1925,7 +1929,7 @@
         isAnalyzing = true;
         currentLines = [];
         oldDepth = 0; // zera o acompanhamento de profundidade
-        updateEngineStatus('Pensando...');
+        updateEngineStatus(tr('e.thinking'));
 
         refreshAutoDepth();   // profundidade automática (histórico + partida)
 
@@ -1987,10 +1991,10 @@
 
         if (!ev) {
             label.textContent = '';
-            bar.title = 'Aguardando análise...';
+            bar.title = tr('u.waiting');
             miniScore.textContent = '–';
             miniScore.className = 'cpp-mini-score';
-            miniText.textContent = reviewMini() || 'Aguardando análise...';
+            miniText.textContent = reviewMini() || tr('u.waiting');
             return;
         }
 
@@ -2012,15 +2016,15 @@
         // Resumo (usado principalmente com o painel minimizado)
         let summary, cls;
         if (isMate) {
-            summary = userLeads ? `Mate a seu favor em ${Math.abs(ev.value)}` : `Você leva mate em ${Math.abs(ev.value)}`;
+            summary = userLeads ? tr('a.mateFor', { n: Math.abs(ev.value) }) : tr('a.mateAgainst', { n: Math.abs(ev.value) });
             cls = userLeads ? 'cpp-mini-good' : 'cpp-mini-bad';
             miniScore.textContent = (userLeads ? '' : '-') + `M${Math.abs(ev.value)}`;
         } else {
             const pawns = (userValue / 100).toFixed(1);
             miniScore.textContent = (userValue >= 0 ? '+' : '') + pawns;
-            if (equal) { summary = 'Posição igual'; cls = 'cpp-mini-equal'; }
-            else if (userLeads) { summary = 'Você está na frente'; cls = 'cpp-mini-good'; }
-            else { summary = 'Adversário está na frente'; cls = 'cpp-mini-bad'; }
+            if (equal) { summary = tr('a.equal'); cls = 'cpp-mini-equal'; }
+            else if (userLeads) { summary = tr('a.ahead'); cls = 'cpp-mini-good'; }
+            else { summary = tr('a.behind'); cls = 'cpp-mini-bad'; }
         }
         const sugMini = manualSuggestion();
         if (sugMini) summary = sugMini.text;
@@ -2078,14 +2082,14 @@
         const pawns = value / 100;
 
         if (pawns >= 5) return { text: 'Ganhando! Vantagem enorme', icon: '', class: 'winning' };
-        if (pawns >= 3) return { text: 'Ótima posição! Vantagem clara', icon: '', class: 'winning' };
-        if (pawns >= 1.5) return { text: 'Boa posição, você está na frente', icon: '', class: 'good' };
-        if (pawns >= 0.5) return { text: 'Pequena vantagem para você', icon: '', class: 'good' };
-        if (pawns > -0.5) return { text: 'Posição igual', icon: '', class: 'neutral' };
-        if (pawns > -1.5) return { text: 'Adversário com pequena vantagem', icon: '', class: 'bad' };
-        if (pawns > -3) return { text: 'Adversário com vantagem', icon: '', class: 'bad' };
-        if (pawns > -5) return { text: 'Posição difícil', icon: '', class: 'losing' };
-        return { text: 'Crítico! Grande desvantagem', icon: '', class: 'losing' };
+        if (pawns >= 3) return { text: tr('a.ev.winning'), icon: '', class: 'winning' };
+        if (pawns >= 1.5) return { text: tr('a.ev.good'), icon: '', class: 'good' };
+        if (pawns >= 0.5) return { text: tr('a.ev.slight'), icon: '', class: 'good' };
+        if (pawns > -0.5) return { text: tr('a.ev.equal'), icon: '', class: 'neutral' };
+        if (pawns > -1.5) return { text: tr('a.ev.oppSlight'), icon: '', class: 'bad' };
+        if (pawns > -3) return { text: tr('a.ev.opp'), icon: '', class: 'bad' };
+        if (pawns > -5) return { text: tr('a.ev.hard'), icon: '', class: 'losing' };
+        return { text: tr('a.ev.critical'), icon: '', class: 'losing' };
     }
 
     function updateEngineStatus(status) {
@@ -2098,7 +2102,7 @@
         if (!container) return;
 
         if (currentLines.length === 0) {
-            container.innerHTML = '<div class="cpp-no-analysis">Analisando a posição...</div>';
+            container.innerHTML = '<div class="cpp-no-analysis">' + tr('a.analyzing') + '</div>';
             return;
         }
 
@@ -2118,7 +2122,7 @@
         html += '<div class="cpp-best-move-display">';
         if (bestLine) {
             const scoreStr = formatScore(bestLine.score);
-            html += `<span class="cpp-best-label">Melhor lance:</span> <span class="cpp-best-move">${formatMove(bestLine.move)}</span> <span class="cpp-best-eval">(${scoreStr})</span>`;
+            html += `<span class="cpp-best-label">${tr('a.bestMove')}</span> <span class="cpp-best-move">${formatMove(bestLine.move)}</span> <span class="cpp-best-eval">(${scoreStr})</span>`;
         }
         html += '</div>';
 
@@ -2444,6 +2448,22 @@
         }, 50);
     }
 
+    // Trocou o idioma (popup ou painel): refaz o painel já traduzido
+    if (window.I18N) {
+        window.I18N.onChange(() => {
+            const old = document.getElementById('chess-position-panel');
+            if (!old || !extEnabled) return;
+            const wasExpanded = !old.classList.contains('cpp-minimized');
+            const p = createPanel();
+            if (p && wasExpanded) { const b = p.querySelector('.cpp-minimize'); if (b) b.click(); }
+            applySettings();
+            syncSettingsUI();
+            syncMarathonUI();
+            renderEvalBar();
+            displayAnalysisLines();
+        });
+    }
+
     // ============= CRIAR O PAINEL =============
     function createPanel() {
         if (!extEnabled) return null;
@@ -2456,12 +2476,12 @@
             <div class="cpp-header">
                 <div class="cpp-title-wrapper">
                     <img src="${chrome.runtime.getURL('icons/crown.png')}" class="cpp-logo" alt="Logo">
-                    <span class="cpp-title">Analisador de Xadrez Pro</span>
+                    <span class="cpp-title">${tr('p.title')}</span>
                     <span class="cpp-version">v${chrome.runtime.getManifest ? chrome.runtime.getManifest().version : ''}</span>
                 </div>
                 <div class="cpp-controls">
-                    <button class="cpp-btn cpp-minimize" title="Minimizar">−</button>
-                    <button class="cpp-btn cpp-close" title="Fechar">×</button>
+                    <button class="cpp-btn cpp-minimize" title="${tr('u.minimize')}">−</button>
+                    <button class="cpp-btn cpp-close" title="${tr('u.close')}">×</button>
                 </div>
             </div>
             <div class="cpp-body">
@@ -2474,12 +2494,12 @@
             <!-- Resumo mostrado só quando o painel está minimizado -->
             <div class="cpp-mini">
                 <span class="cpp-mini-score" id="cpp-mini-score">–</span>
-                <span class="cpp-mini-text" id="cpp-mini-text">Aguardando análise...</span>
-                <button class="cpp-mini-btn" id="cpp-mini-auto" title="Alternar entre jogada automática e manual">Manual</button>
+                <span class="cpp-mini-text" id="cpp-mini-text">${tr('u.waiting')}</span>
+                <button class="cpp-mini-btn" id="cpp-mini-auto" title="${tr('u.miniAutoTitle')}">${tr('u.manual')}</button>
                 <div class="cpp-mini-mar">
-                    <input type="number" id="cpp-mini-mar-n" class="cpp-marathon-n" min="1" max="99" value="15" title="Quantidade de partidas">
-                    <button class="cpp-mini-btn cpp-mini-play" id="cpp-mini-mar-btn" title="Iniciar maratona">▶</button>
-                    <button class="cpp-mini-btn cpp-mini-stop" id="cpp-mini-mar-stop" title="Parar maratona" disabled>■</button>
+                    <input type="number" id="cpp-mini-mar-n" class="cpp-marathon-n" min="1" max="99" value="15" title="${tr('u.gamesCount')}">
+                    <button class="cpp-mini-btn cpp-mini-play" id="cpp-mini-mar-btn" title="${tr('u.marStartTitle')}">▶</button>
+                    <button class="cpp-mini-btn cpp-mini-stop" id="cpp-mini-mar-stop" title="${tr('u.marStopTitle')}" disabled>■</button>
                 </div>
                 <span class="cpp-mini-hint" id="cpp-mini-mar-hint"></span>
             </div>
@@ -2487,75 +2507,79 @@
                 <!-- Análise do motor -->
                 <div class="cpp-analysis-section">
                     <div class="cpp-status-row">
-                        <span class="cpp-engine-status">Iniciando...</span>
+                        <span class="cpp-engine-status">${tr('u.starting')}</span>
                     </div>
                     <div class="cpp-analysis-lines">
-                        <div class="cpp-no-analysis">Iniciando o motor...</div>
+                        <div class="cpp-no-analysis">${tr('u.startingEngine')}</div>
                     </div>
                     <div class="cpp-settings">
                         <div class="cpp-setting-row">
-                            <label for="cpp-depth-select">Profundidade</label>
+                            <label for="cpp-depth-select">${tr('u.depth')}</label>
                             <select id="cpp-depth-select" class="cpp-select"></select>
                         </div>
                         <div class="cpp-setting-hint" id="cpp-depth-hint"></div>
                         <div class="cpp-setting-row">
-                            <label for="cpp-style-select">Agressividade</label>
+                            <label for="cpp-style-select">${tr('u.style')}</label>
                             <select id="cpp-style-select" class="cpp-select"></select>
                         </div>
                         <div class="cpp-setting-hint" id="cpp-style-hint"></div>
                         <div class="cpp-setting-row">
-                            <label for="cpp-pace-select">Ritmo da jogada</label>
+                            <label for="cpp-pace-select">${tr('u.pace')}</label>
                             <select id="cpp-pace-select" class="cpp-select"></select>
                         </div>
                         <div class="cpp-setting-hint" id="cpp-pace-hint"></div>
+                        <div class="cpp-setting-row">
+                            <label for="cpp-lang-select">${tr('u.language')}</label>
+                            <select id="cpp-lang-select" class="cpp-select"></select>
+                        </div>
                     </div>
                     <div class="cpp-auto-analyze">
                         <div class="cpp-check-row">
-                            <label><input type="checkbox" id="auto-move-cb"> Jogada automática</label>
-                            <label><input type="checkbox" id="cpp-human-cb"> Modo humano</label>
+                            <label><input type="checkbox" id="auto-move-cb"> ${tr('u.autoMove')}</label>
+                            <label><input type="checkbox" id="cpp-human-cb"> ${tr('u.human')}</label>
                         </div>
-                        <div class="cpp-setting-hint" id="cpp-human-hint">Modo humano: desiste quando a desvantagem passa de uns 5 peões (ex.: perdeu a dama).</div>
+                        <div class="cpp-setting-hint" id="cpp-human-hint">${tr('u.humanHint')}</div>
                     </div>
                 </div>
 
                 <!-- Maratona de partidas -->
                 <div class="cpp-review-section cpp-marathon-section">
-                    <div class="cpp-legend-title">Maratona de partidas</div>
+                    <div class="cpp-legend-title">${tr('u.marTitle')}</div>
                     <div class="cpp-marathon-row">
-                        <label for="cpp-marathon-n">Quantidade</label>
+                        <label for="cpp-marathon-n">${tr('u.marQty')}</label>
                         <input type="number" id="cpp-marathon-n" class="cpp-marathon-n" min="1" max="99" value="15">
                     </div>
-                    <button class="cpp-review-btn" id="cpp-marathon-btn">Iniciar maratona</button>
+                    <button class="cpp-review-btn" id="cpp-marathon-btn">${tr('u.marStart')}</button>
                     <div class="cpp-setting-hint" id="cpp-marathon-hint"></div>
                 </div>
 
                 <!-- Precisão da partida -->
                 <div class="cpp-review-section">
-                    <div class="cpp-legend-title">Precisão da partida</div>
-                    <button class="cpp-review-btn" id="cpp-review-btn">Calcular precisão desta partida</button>
-                    <div class="cpp-setting-hint" id="cpp-review-status">Abra uma partida terminada. Ao fim de cada partida, calcula sozinho.</div>
+                    <div class="cpp-legend-title">${tr('u.accTitle')}</div>
+                    <button class="cpp-review-btn" id="cpp-review-btn">${tr('u.accBtn')}</button>
+                    <div class="cpp-setting-hint" id="cpp-review-status">${tr('u.accHint')}</div>
                     <div id="cpp-review-result"></div>
                 </div>
 
                 <!-- Legenda -->
                 <div class="cpp-legend-section">
-                    <div class="cpp-legend-title">Legenda</div>
+                    <div class="cpp-legend-title">${tr('u.legend')}</div>
                     <div class="cpp-legend-items">
                         <div class="cpp-legend-item">
                             <span class="cpp-legend-icon cpp-legend-arrow"></span>
-                            <span>Setas = lances que a jogada automática pode fazer: verde = melhor, laranja = intermediário, vermelho = ruim</span>
+                            <span>${tr('u.legArrows')}</span>
                         </div>
                         <div class="cpp-legend-item">
                             <span class="cpp-legend-icon cpp-legend-hanging"></span>
-                            <span>Vermelho = peça atacada e sem defesa</span>
+                            <span>${tr('u.legHanging')}</span>
                         </div>
                         <div class="cpp-legend-item">
                             <span class="cpp-legend-icon cpp-legend-defended"></span>
-                            <span>Laranja = peça atacada, mas defendida</span>
+                            <span>${tr('u.legDefended')}</span>
                         </div>
                         <div class="cpp-legend-item">
                             <span class="cpp-legend-icon cpp-legend-bar"></span>
-                            <span>Barra lateral = quem está na frente (número em peões)</span>
+                            <span>${tr('u.legBar')}</span>
                         </div>
                     </div>
                 </div>
@@ -2595,14 +2619,26 @@
 
         // Opções de profundidade com o rating aproximado ao lado
         const depthSelect = panel.querySelector('#cpp-depth-select');
+        const langSelect = panel.querySelector('#cpp-lang-select');
+        if (langSelect && window.I18N) {
+            window.I18N.LANGS.forEach(l => {
+                const o = document.createElement('option');
+                o.value = l.code;
+                o.textContent = l.name;
+                langSelect.appendChild(o);
+            });
+            langSelect.value = window.I18N.getLang();
+            langSelect.addEventListener('change', () => window.I18N.setLang(langSelect.value));
+            window.I18N.enhanceSelect(langSelect);   // lista com bandeira
+        }
         const autoOpt = document.createElement('option');
         autoOpt.value = '0';
-        autoOpt.textContent = 'Automática';
+        autoOpt.textContent = tr('u.depthAuto');
         depthSelect.appendChild(autoOpt);
         for (let d = MIN_DEPTH; d <= MAX_DEPTH; d++) {
             const opt = document.createElement('option');
             opt.value = String(d);
-            opt.textContent = `Prof. ${d}  ≈ ${DEPTH_RATINGS[d]}`;
+            opt.textContent = tr('u.depthOpt', { d, r: DEPTH_RATINGS[d] });
             depthSelect.appendChild(opt);
         }
         const styleSelect = panel.querySelector('#cpp-style-select');
@@ -2659,7 +2695,7 @@
         });
 
         panel.querySelector('#cpp-marathon-btn').addEventListener('click', () => {
-            if (settings.marathonOn) stopMarathon('Maratona parada.');
+            if (settings.marathonOn) stopMarathon(tr('m.stopped'));
             else startMarathon(panel.querySelector('#cpp-marathon-n').value);
         });
 
@@ -2669,7 +2705,7 @@
             if (!settings.marathonOn) startMarathon(panel.querySelector('#cpp-mini-mar-n').value);
         });
         panel.querySelector('#cpp-mini-mar-stop').addEventListener('click', () => {
-            if (settings.marathonOn) stopMarathon('Maratona parada.');
+            if (settings.marathonOn) stopMarathon(tr('m.stopped'));
         });
 
         // A quantidade escolhida também fica guardada (sem iniciar a maratona)
@@ -2703,7 +2739,7 @@
         saveSettings();
         if (!autoMoveEnabled) {
             cancelPendingMove();
-            if (settings.marathonOn) { stopMarathon('Maratona parada: modo manual.'); return; }
+            if (settings.marathonOn) { stopMarathon(tr('m.stoppedManual')); return; }
         } else if (!isAnalyzing) {
             // Se a posição atual já foi analisada, só agenda o lance; senão analisa
             if (!rescheduleAutoMove()) analyzePosition();
@@ -2725,16 +2761,16 @@
         if (autoCb) autoCb.checked = settings.autoMove;
         const miniAuto = panel.querySelector('#cpp-mini-auto');
         if (miniAuto) {
-            miniAuto.textContent = settings.autoMove ? 'Automático' : 'Manual';
+            miniAuto.textContent = settings.autoMove ? tr('u.automatic') : tr('u.manual');
             miniAuto.classList.toggle('on', settings.autoMove);
         }
         if (hint) {
             const r = DEPTH_RATINGS[settings.depth === 0 ? analysisDepth : settings.depth] || DEPTH_RATINGS[MAX_DEPTH];
             const prof = errorProfile(r);
-            const erro = prof.inaccuracy <= 0 ? 'Sem erros propositais.'
-                : prof.inaccuracy < 0.1 ? 'A jogada automática erra raramente.'
-                : 'A jogada automática erra como esse nível.';
-            hint.textContent = settings.depth === 0 ? `${autoDepthSummary()} ${erro}` : `≈ ${r} de rating · ${ratingLabel(r)}. ${erro}`;
+            const erro = prof.inaccuracy <= 0 ? tr('dep.noErr')
+                : prof.inaccuracy < 0.1 ? tr('dep.rarely')
+                : tr('dep.likeLevel');
+            hint.textContent = settings.depth === 0 ? `${autoDepthSummary()} ${erro}` : tr('dep.hint', { r, l: ratingLabel(r), e: erro });
         }
         const styleSel = panel.querySelector('#cpp-style-select');
         if (styleSel) styleSel.value = settings.style;
@@ -2743,7 +2779,7 @@
         const humanCb = panel.querySelector('#cpp-human-cb');
         if (humanCb) humanCb.checked = settings.humanMode;
         const paceHint = panel.querySelector('#cpp-pace-hint');
-        if (paceHint) paceHint.textContent = PACE_HINTS[settings.pace] + ' Com pouco tempo no relógio, acelera.';
+        if (paceHint) paceHint.textContent = PACE_HINTS[settings.pace] + tr('pace.suffix');
         syncMarathonUI();
     }
 
@@ -3030,8 +3066,8 @@
                 const j = await r.json();
                 const g = j && j.game;
                 if (!g || !g.moveList) continue;
-                if (g.type && g.type !== 'chess') return { error: 'Só calculo xadrez padrão.' };
-                if (g.isFinished === false) return { error: 'A partida ainda está em andamento.' };
+                if (g.type && g.type !== 'chess') return { error: tr('v.onlyStd') };
+                if (g.isFinished === false) return { error: tr('v.inProgress') };
                 const coords = Ch.decodeMoveList(g.moveList);
                 if (!coords) continue;
                 const start = g.initialSetup || g.pgnHeaders && g.pgnHeaders.SetUp === '1' && g.pgnHeaders.FEN || '';
@@ -3121,27 +3157,27 @@
     }
 
     function renderReview(game, user, acc) {
-        const white = (game.white && game.white.username) || 'Brancas';
-        const black = (game.black && game.black.username) || 'Pretas';
+        const white = (game.white && game.white.username) || tr('v.white');
+        const black = (game.black && game.black.username) || tr('v.black');
         const meWhite = white.toLowerCase() === user.toLowerCase();
         const mine = meWhite ? acc.w : acc.b, theirs = meWhite ? acc.b : acc.w;
         const myC = meWhite ? acc.counts.w : acc.counts.b, thC = meWhite ? acc.counts.b : acc.counts.w;
-        const cnt = (c) => c.blunder + ' gafes · ' + c.mistake + ' erros · ' + c.inaccuracy + ' imprecisões';
+        const cnt = (c) => tr('v.counts', { b: c.blunder, m: c.mistake, i: c.inaccuracy });
         const box = document.getElementById('cpp-review-result');
         if (box) {
             box.textContent = '';
             const add = (cls, text) => { const d = document.createElement('div'); d.className = cls; d.textContent = text; box.appendChild(d); };
-            add('cpp-review-line', 'Você: ' + fmtPct(mine) + '%  ·  Adversário: ' + fmtPct(theirs) + '%');
-            add('cpp-review-sub', 'Seus lances: ' + cnt(myC));
-            add('cpp-review-sub', 'Adversário: ' + cnt(thC));
+            add('cpp-review-line', tr('v.line', { a: fmtPct(mine), b: fmtPct(theirs) }));
+            add('cpp-review-sub', tr('v.mine', { c: cnt(myC) }));
+            add('cpp-review-sub', tr('v.theirs', { c: cnt(thC) }));
             const off = game.accuracies;
             if (off && typeof off.white === 'number') {
-                add('cpp-review-sub', 'Número do site: você ' + fmtPct(meWhite ? off.white : off.black) + '  ·  adversário ' + fmtPct(meWhite ? off.black : off.white));
+                add('cpp-review-sub', tr('v.site', { a: fmtPct(meWhite ? off.white : off.black), b: fmtPct(meWhite ? off.black : off.white) }));
             }
         }
-        reviewSummary = 'Precisão: você ' + fmtPct(mine) + '% · adv. ' + fmtPct(theirs) + '%';
+        reviewSummary = tr('v.summary', { a: fmtPct(mine), b: fmtPct(theirs) });
         reviewSummaryGame = getCurrentGameId();
-        reviewStatus('Pronto. Calculado com o Stockfish (prof. ' + REVIEW_DEPTH + ').');
+        reviewStatus(tr('v.done', { d: REVIEW_DEPTH }));
         renderEvalBar();
     }
 
@@ -3150,17 +3186,17 @@
         const Ch = window.CPPChess;
         const btn = document.getElementById('cpp-review-btn');
         const id = getCurrentGameId();
-        if (!Ch) { reviewStatus('Módulo de regras indisponível'); return; }
-        if (!/^\d+$/.test(id)) { reviewStatus('Abra uma partida terminada para calcular.'); return; }
+        if (!Ch) { reviewStatus(tr('v.noRules')); return; }
+        if (!/^\d+$/.test(id)) { reviewStatus(tr('v.openFinished')); return; }
         const names = collectUsernames();
-        if (!names.length) { reviewStatus('Não achei nenhum nome de jogador na página. Abra a página da partida.'); return; }
+        if (!names.length) { reviewStatus(tr('v.noNames')); return; }
         let user = names[0];
 
         reviewRunning = true;
         if (btn) btn.disabled = true;
         let engine = null;
         try {
-            reviewStatus('Buscando a partida...');
+            reviewStatus(tr('v.searching'));
             let game = null;
             let fromSite = await fetchGameFromSite(id);
             if (fromSite && fromSite.error) { reviewStatus(fromSite.error); return; }
@@ -3170,7 +3206,7 @@
                     if (game) break;
                 }
                 if (!game) {
-                    reviewStatus('Aguardando o site liberar a partida...');
+                    reviewStatus(tr('v.waitSite'));
                     await new Promise(r => timers.setTimeout(r, 4000));
                     if (!extensionAlive() || getCurrentGameId() !== id) return;
                 }
@@ -3178,20 +3214,20 @@
             if (fromSite) {
                 game = { white: { username: fromSite.white }, black: { username: fromSite.black }, accuracies: null };
             } else {
-                if (!game) { reviewStatus('Partida não encontrada no histórico do site (ainda).'); return; }
-                if (game.rules && game.rules !== 'chess') { reviewStatus('Só calculo xadrez padrão.'); return; }
+                if (!game) { reviewStatus(tr('v.notFound')); return; }
+                if (game.rules && game.rules !== 'chess') { reviewStatus(tr('v.onlyStd')); return; }
             }
             const players = [(game.white && game.white.username || '').toLowerCase(), (game.black && game.black.username || '').toLowerCase()];
             user = names.find(n => players.includes(n)) || players[0];
 
             const rep = fromSite ? fromSite.rep : Ch.replay(Ch.parsePgn(game.pgn || '').sans);
-            if (rep.error || rep.states.length < 3) { reviewStatus('Não consegui ler os lances (' + (rep.error || 'partida curta') + ').'); return; }
+            if (rep.error || rep.states.length < 3) { reviewStatus(tr('v.cantRead', { r: rep.error || tr('v.short') })); return; }
 
             engine = await createReviewEngine();
             const cps = [];
             for (let i = 0; i < rep.states.length; i++) {
                 if (!extensionAlive() || getCurrentGameId() !== id) return;   // saiu da partida
-                reviewStatus('Analisando lance ' + i + '/' + (rep.states.length - 1) + '...');
+                reviewStatus(tr('v.analyzingMove', { i, n: rep.states.length - 1 }));
                 const st = rep.states[i];
                 if (Ch.legalMoves(st).length === 0) {
                     cps.push(Ch.inCheck(st, st.turn) ? (st.turn === 'w' ? -10000 : 10000) : 0);   // mate ou afogamento
@@ -3202,7 +3238,7 @@
             renderReview(game, user, Ch.gameAccuracy(cps));
         } catch (e) {
             console.log('[Precisão da partida] falha:', e && e.message);
-            reviewStatus('Não foi possível calcular agora.');
+            reviewStatus(tr('v.cantCalc'));
         } finally {
             if (engine) engine.close();
             reviewRunning = false;
@@ -3239,7 +3275,7 @@
         const btn = panel.querySelector('#cpp-marathon-btn');
         const input = panel.querySelector('#cpp-marathon-n');
         const hint = panel.querySelector('#cpp-marathon-hint');
-        if (btn) btn.textContent = settings.marathonOn ? 'Parar maratona' : 'Iniciar maratona';
+        if (btn) btn.textContent = settings.marathonOn ? tr('u.marStop') : tr('u.marStart');
         const mBtn = panel.querySelector('#cpp-mini-mar-btn');
         const mIn = panel.querySelector('#cpp-mini-mar-n');
         const mHint = panel.querySelector('#cpp-mini-mar-hint');
@@ -3250,7 +3286,7 @@
         const shownN = String(settings.marathonOn ? marathonLeft() : settings.marathonTotal);
         if (mIn) { mIn.disabled = settings.marathonOn; if (settings.marathonOn || document.activeElement !== mIn) mIn.value = shownN; }
         if (mHint) mHint.textContent = settings.marathonOn
-            ? (settings.marathonPending ? `Faltam ${marathonLeft()}. Próxima partida...` : `Faltam ${marathonLeft()} (partida ${Math.min(settings.marathonDone + 1, settings.marathonTotal)} de ${settings.marathonTotal})`)
+            ? (settings.marathonPending ? tr('m.miniPending', { l: marathonLeft() }) : tr('m.miniRunning', { l: marathonLeft(), c: Math.min(settings.marathonDone + 1, settings.marathonTotal), n: settings.marathonTotal }))
             : (marathonMessage || '');
         if (input) {
             input.disabled = settings.marathonOn;
@@ -3260,11 +3296,11 @@
             if (settings.marathonOn) {
                 const n = settings.marathonDone + 1;
                 hint.textContent = settings.marathonPending
-                    ? `${settings.marathonDone} de ${settings.marathonTotal} concluídas. Começando a próxima partida...`
-                    : `Jogando a partida ${Math.min(n, settings.marathonTotal)} de ${settings.marathonTotal}. Faltam ${marathonLeft()} (contando esta).`;
+                    ? tr('m.pending', { d: settings.marathonDone, n: settings.marathonTotal })
+                    : tr('m.playing', { c: Math.min(n, settings.marathonTotal), n: settings.marathonTotal, l: marathonLeft() });
             } else {
                 hint.textContent = (marathonMessage ? marathonMessage + ' ' : '') +
-                    'Escolha quantas partidas. Ao fim de cada uma, começa a próxima e ignora pedido de revanche. Deixe o computador ligado e a aba aberta.';
+                    tr('m.intro');
             }
         }
     }
@@ -3451,7 +3487,7 @@
         settings.marathonLastId = id;
         settings.marathonDone++;
         if (marathonLeft() <= 0) {
-            stopMarathon(`Maratona concluída: ${settings.marathonTotal} partidas.`);
+            stopMarathon(tr('m.finished', { n: settings.marathonTotal }));
             return;
         }
         settings.marathonPending = true;
@@ -3505,7 +3541,7 @@
             boardWatchTickInner();
         } catch (err) {
             console.log('Erro ao vigiar o tabuleiro:', err);
-            updateEngineStatus('Erro: ' + (err && err.message ? err.message : err));
+            updateEngineStatus(tr('e.errorMsg', { m: err && err.message ? err.message : err }));
         }
     }
 
@@ -3565,7 +3601,7 @@
                 currentLines = [];
                 document.querySelectorAll('.cpp-best-move-arrow').forEach(el => el.remove());
                 const container = document.querySelector('.cpp-analysis-lines');
-                if (container) container.innerHTML = '<div class="cpp-no-analysis">Analisando a posição...</div>';
+                if (container) container.innerHTML = '<div class="cpp-no-analysis">' + tr('a.analyzing') + '</div>';
             }
             analyzePosition();
         } else if (currentLines.length > 0) {
@@ -3620,7 +3656,7 @@
         // Atualiza a tela
         const container = document.querySelector('.cpp-analysis-lines');
         if (container) {
-            container.innerHTML = '<div class="cpp-no-analysis">Nova partida detectada, analisando...</div>';
+            container.innerHTML = '<div class="cpp-no-analysis">' + tr('a.newGame') + '</div>';
         }
     }
 
@@ -3650,7 +3686,7 @@
             onDomChangeInner();
         } catch (err) {
             console.log('Erro ao detectar a partida:', err);
-            updateEngineStatus('Erro: ' + (err && err.message ? err.message : err));
+            updateEngineStatus(tr('e.errorMsg', { m: err && err.message ? err.message : err }));
         }
     }
 

@@ -175,3 +175,50 @@ body {
     margin-top: 6px;
     line-height: 15px;
 }
+
+.lang-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 0 2px;
+    font-size: 12px;
+    color: #bdbdbd;
+}
+
+.lang-select {
+    flex: 1;
+    max-width: 150px;
+    background: #242424;
+    color: #ffffff;
+    border: 1px solid #333333;
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 12px;
+}
+
+/* "Pague-me um café": botão grande e chamativo */
+.footer { padding-top: 14px; }
+.footer a.coffee-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 13px 14px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a1a;
+    text-decoration: none;
+    background: linear-gradient(180deg, #ffcf5a 0%, #f5a623 100%);
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(245, 166, 35, 0.35);
+    transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+}
+.footer a.coffee-btn:hover {
+    color: #1a1a1a;
+    filter: brightness(1.06);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(245, 166, 35, 0.5);
+}
+.coffee-ico { flex: none; }
+.lang-row .cpp-lp { flex: 1; max-width: 175px; }

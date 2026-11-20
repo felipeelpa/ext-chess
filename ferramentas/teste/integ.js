@@ -43,11 +43,12 @@ win.console.error = (...a) => errors.push('console.error: ' + a.join(' '));
 let saved = null;
 let listener = null;
 let storageListener = null;
+let savedLang = null;
 win.chrome = {
   runtime: { id: 'teste', getURL: x => x, lastError: null, onMessage: { addListener: fn => { listener = fn; } } },
   storage: { local: {
     get: (k, cb) => cb({ cppSettings: { depth: 5, autoMove: true, pace: 'fast' } }),
-    set: (o) => { if (o.cppSettings) saved = o.cppSettings; },
+    set: (o) => { if (o.cppSettings) saved = o.cppSettings; if (o.cppLang) savedLang = o.cppLang; },
   }, onChanged: { addListener: fn => { storageListener = fn; } } },
 };
 let engineScore = { type: 'cp', value: 80 };   // placar que o motor simulado devolve (vez de quem joga)
@@ -130,6 +131,7 @@ doc.elementFromPoint = () => doc.getElementById('b');
 if (!win.PointerEvent) win.PointerEvent = win.MouseEvent;
 
 win.eval(fs.readFileSync(SRC + '\\chess-lite.js', 'utf8'));   // regras do xadrez (carregadas antes, como no manifesto)
+win.eval(fs.readFileSync(SRC + '\\i18n.js', 'utf8'));   // idiomas (antes do content.js, como no manifesto)
 win.eval(code);
 
 (async () => {
@@ -900,10 +902,30 @@ win.eval(code);
   const pnY = doc.getElementById('chess-position-panel');
   if (pnY && !pnY.classList.contains('cpp-minimized')) pnY.querySelector('.cpp-minimize').click();
 
+  // I) Idiomas: trocar no painel traduz tudo na hora; voltar ao português restaura
+  const langOf = () => doc.getElementById('cpp-lang-select');
+  const panelTxt = () => doc.getElementById('chess-position-panel').textContent;
+  check('I: seletor de idioma no painel com 7 idiomas', !!langOf() && langOf().options.length === 7 && langOf().value === 'pt', langOf() && langOf().options.length + '/' + langOf().value);
+  const setLangUI = async (code) => { langOf().value = code; langOf().dispatchEvent(new win.Event('change')); await sleep(500); };
+  await setLangUI('en');
+  check('I: inglês: título, rótulos e maratona traduzidos', doc.querySelector('.cpp-title').textContent === 'Chess Analyzer Pro' && /Depth/.test(panelTxt()) && /Game marathon/.test(panelTxt()) && !/Profundidade|Maratona/.test(panelTxt()), doc.querySelector('.cpp-title').textContent);
+  check('I: inglês: seletor continua em inglês e salvou a escolha', langOf().value === 'en' && savedLang === 'en', langOf().value + '/' + savedLang);
+  await setLangUI('ru');
+  check('I: russo: painel traduzido', doc.querySelector('.cpp-title').textContent === 'Шахматный анализатор Pro' && /Глубина/.test(panelTxt()), doc.querySelector('.cpp-title').textContent);
+  await setLangUI('zh');
+  check('I: chinês: painel traduzido', doc.querySelector('.cpp-title').textContent === '国际象棋分析器 Pro' && /搜索深度/.test(panelTxt()), doc.querySelector('.cpp-title').textContent);
+  for (const [c, re] of [['es', /Profundidad/], ['fr', /Profondeur/], ['it', /Profondità/]]) {
+    await setLangUI(c);
+    check(`I: ${c}: painel traduzido`, re.test(panelTxt()) && !/Maratona de partidas/.test(panelTxt()), c);
+  }
+  await setLangUI('pt');
+  check('I: de volta ao português: tudo restaurado', doc.querySelector('.cpp-title').textContent === 'Analisador de Xadrez Pro' && /Profundidade/.test(panelTxt()) && /Maratona de partidas/.test(panelTxt()), doc.querySelector('.cpp-title').textContent);
+  { const pnI = doc.getElementById('chess-position-panel'); if (pnI && !pnI.classList.contains('cpp-minimized')) pnI.querySelector('.cpp-minimize').click(); }
+
   // L) Extensão recarregada com a página aberta (contexto invalidado): avisa para apertar F5 e para tudo
   win.chrome.runtime.id = undefined;
   await sleep(1500);
-  check('L: extensão recarregada: pede F5', /F5/.test(statusText()), statusText());
+  check('L: extensão recarregada: pede F5', /F5/.test(statusText()), statusText() + ' | painéis=' + doc.querySelectorAll('#chess-position-panel').length + ' | status=' + Array.from(doc.querySelectorAll('.cpp-engine-status')).map(e => e.textContent).join('/'));
   check('L: sem setas depois de invalidar', doc.querySelectorAll('.cpp-best-move-arrow').length === 0);
   win.chrome.runtime.id = 'teste';
 

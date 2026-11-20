@@ -1,7 +1,7 @@
 {
    "manifest_version": 3,
    "name": "Analisador de Xadrez Pro (Jogada Automática)",
-   "version": "1.9.17",
+   "version": "1.10.1",
    "description": "Análise de xadrez em tempo real para o Chess.com, com setas dos melhores lances e jogada automática.",
    "action": {
       "default_icon": {
@@ -18,7 +18,7 @@
       "world": "MAIN"
    }, {
       "css": [ "content.css" ],
-      "js": [ "chess-lite.js", "content.js" ],
+      "js": [ "chess-lite.js", "i18n.js", "content.js" ],
       "matches": [ "*://*.chess.com/*" ]
    } ],
    "host_permissions": [ "*://*.chess.com/*" ],
