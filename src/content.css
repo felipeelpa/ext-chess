@@ -740,3 +740,7 @@
 .cpp-mini-stop {
     color: #e07575;
 }
+
+/* Tachinha: verde quando fixo, apagada quando solto */
+.cpp-pin { opacity: 0.55; }
+.cpp-pin.on { opacity: 1; color: #4cd07d; }

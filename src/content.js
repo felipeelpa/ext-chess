@@ -182,7 +182,7 @@
         get defensive() { return tr('style.hint.defensive'); },
         get auto() { return tr('style.hint.auto'); }
     };
-    const DEFAULT_SETTINGS = { depth: 12, autoMove: false, pace: 'smart', humanMode: false, style: 'auto',
+    const DEFAULT_SETTINGS = { depth: 12, autoMove: false, pinned: true, pace: 'smart', humanMode: false, style: 'auto',
         marathonOn: false, marathonTotal: 15, marathonDone: 0, marathonPending: false, marathonLastId: '' };
     let settings = { ...DEFAULT_SETTINGS };
 
@@ -191,6 +191,7 @@
         const d = parseInt(out.depth);
         out.depth = d === 0 ? 0 : Math.min(MAX_DEPTH, Math.max(MIN_DEPTH, d || DEFAULT_SETTINGS.depth));   // 0 = automática
         out.autoMove = !!out.autoMove;
+        out.pinned = out.pinned !== false;   // fixo na lateral (padrão) ou solto
         out.humanMode = !!out.humanMode;
         if (!PACE_OPTIONS.some(p => p.value === out.pace)) out.pace = DEFAULT_SETTINGS.pace;
         if (!STYLE_OPTIONS.some(p => p.value === out.style)) out.style = DEFAULT_SETTINGS.style;
@@ -2480,6 +2481,7 @@
                     <span class="cpp-version">v${chrome.runtime.getManifest ? chrome.runtime.getManifest().version : ''}</span>
                 </div>
                 <div class="cpp-controls">
+                    <button class="cpp-btn cpp-pin" title="${tr(settings.pinned ? 'u.unpin' : 'u.pin')}"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M16 9V4h1V2H7v2h1v5l-2 3v2h5.2v7h1.6v-7H18v-2z"/></svg></button>
                     <button class="cpp-btn cpp-minimize" title="${tr('u.minimize')}">−</button>
                     <button class="cpp-btn cpp-close" title="${tr('u.close')}">×</button>
                 </div>
@@ -2601,6 +2603,12 @@
         // O painel sempre abre minimizado; o usuário expande se quiser
         panel.classList.add('cpp-minimized');
         panel.querySelector('.cpp-minimize').textContent = '+';
+        panel.querySelector('.cpp-pin').addEventListener('click', () => {
+            settings.pinned = !settings.pinned;
+            saveSettings();
+            applyPinMode(panel);
+        });
+        applyPinMode(panel);
 
         panel.querySelector('.cpp-minimize').addEventListener('click', () => {
             panel.classList.toggle('cpp-minimized');
@@ -2807,26 +2815,58 @@
         return boards.reduce((a, b) => (b.getBoundingClientRect().width > a.getBoundingClientRect().width ? b : a));
     }
 
-    // Borda direita da barra lateral do site (em px da página)
-    function sidebarRight() {
+    // A barra lateral do site (a faixa à esquerda, de uns 80 a 320 px, com metade da altura da janela ou mais)
+    function findSidebar() {
         const vh = window.innerHeight || 800;
         const cands = document.querySelectorAll('nav, aside, [class*="sidebar"], [id*="sidebar"], [id="sb"], [class*="nav-menu"]');
         for (const el of cands) {
             if (el.closest('#chess-position-panel')) continue;
             const r = el.getBoundingClientRect();
-            if (r.left <= 3 && r.width >= 80 && r.width <= 320 && r.height >= vh * 0.5) return r.right;
+            if (r.left <= 3 && r.width >= 80 && r.width <= 320 && r.height >= vh * 0.5) return el;
         }
+        return null;
+    }
+
+    // Borda direita da barra lateral do site (em px da página)
+    function sidebarRight() {
+        const sb = findSidebar();
+        if (sb) return sb.getBoundingClientRect().right;
         const board = mainBoard();
         const boardLeft = board ? board.getBoundingClientRect().left : 0;
         return Math.min(218, boardLeft - 40);
     }
 
-    // Posição e largura do painel recolhido: dentro da lateral, abaixo do menu
+    // Onde começa o maior vão vazio entre os itens da barra lateral (entre o menu de cima e o de baixo,
+    // como "Pesquisar" e o perfil). O painel entra ali, sem tapar nenhum botão do site.
+    // shortcut: acha o vão pela posição dos links/botões, não pelo nome deles; vão menor que 120 px = não usa
+    function sidebarGapTop() {
+        const sb = findSidebar();
+        if (!sb) return null;
+        const sbr = sb.getBoundingClientRect();
+        const right = sbr.right;
+        // Só conta o que aparece de verdade: o menu "Mais" fechado mantém os itens com posição (invisíveis) e o
+        // link "pular para o conteúdo" fica fora da tela; ambos fariam o vão começar mais embaixo.
+        const itens = Array.from(sb.querySelectorAll('a, button, [role="button"]'))
+            .filter(el => !el.closest('#chess-position-panel'))
+            .filter(el => !el.checkVisibility || el.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true }))
+            .map(el => el.getBoundingClientRect())
+            .filter(r => r.width > 0 && r.height > 0 && r.left >= sbr.left - 4 && r.right <= right + 4)
+            .sort((a, b) => a.top - b.top);
+        let melhor = 0, topo = null, ate = -Infinity;
+        for (const r of itens) {
+            if (ate > -Infinity && r.top - ate > melhor) { melhor = r.top - ate; topo = ate; }
+            ate = Math.max(ate, r.bottom);
+        }
+        return melhor >= 120 ? topo : null;
+    }
+
+    // Posição e largura do painel recolhido: dentro da lateral, logo abaixo do menu
     function layoutDock(panel) {
         const right = sidebarRight();
         const width = Math.max(130, Math.round(right - 16));
         const vh = window.innerHeight || 800;
-        const top = Math.max(360, Math.min(Math.round(vh * 0.45), vh - 190));
+        const gap = sidebarGapTop();
+        const top = gap !== null ? Math.round(gap + 8) : Math.max(360, Math.min(Math.round(vh * 0.45), vh - 190));
         panel.style.left = '8px';
         panel.style.top = top + 'px';
         panel.style.right = 'auto';
@@ -2834,10 +2874,8 @@
     }
 
     function dockPanel(panel, minimized) {
+        if (!settings.pinned) return;   // solto: fica onde o usuário deixou
         if (minimized) {
-            const board = mainBoard();
-            const boardLeft = board ? board.getBoundingClientRect().left : 0;
-            if (boardLeft < 235) return;   // sem lateral à esquerda do tabuleiro: fica onde está
             panel.classList.remove('cpp-pinned');
             panel.classList.add('cpp-docked');
             layoutDock(panel);
@@ -2853,9 +2891,19 @@
     // flutuando como antes (e pode ser arrastado).
     function applyPinned(panel) {
         if (panel.classList.contains('cpp-docked') || panel.classList.contains('cpp-minimized')) return;
-        const board = mainBoard();
-        const boardLeft = board ? board.getBoundingClientRect().left : 0;
-        panel.classList.toggle('cpp-pinned', boardLeft >= 320);
+        panel.classList.toggle('cpp-pinned', settings.pinned);
+    }
+
+    // Botão da tachinha: fixo na lateral esquerda <-> solto e arrastável. A escolha fica salva.
+    function applyPinMode(panel) {
+        const btn = panel.querySelector('.cpp-pin');
+        if (btn) { btn.classList.toggle('on', settings.pinned); btn.title = tr(settings.pinned ? 'u.unpin' : 'u.pin'); }
+        if (settings.pinned) {
+            if (panel.classList.contains('cpp-minimized')) dockPanel(panel, true); else applyPinned(panel);
+        } else {
+            panel.classList.remove('cpp-docked', 'cpp-pinned');
+            panel.style.left = panel.style.top = panel.style.right = panel.style.width = '';
+        }
     }
 
     function makeDraggable(element) {
@@ -2864,7 +2912,7 @@
         let startX, startY, initialX, initialY;
 
         header.addEventListener('mousedown', (e) => {
-            if (e.target.classList.contains('cpp-btn')) return;
+            if (e.target.closest('.cpp-btn')) return;
             if (element.classList.contains('cpp-docked') || element.classList.contains('cpp-pinned')) return;   // fixo na lateral
             isDragging = true;
             startX = e.clientX;

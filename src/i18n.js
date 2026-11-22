@@ -74,6 +74,8 @@
 
         // ---------- painel ----------
         'u.minimize': ['Minimizar', 'Minimize', 'Свернуть', '最小化', 'Minimizar', 'Réduire', 'Riduci'],
+        'u.pin': ['Fixar na lateral esquerda', 'Pin to the left side', 'Закрепить слева', '固定在左侧', 'Fijar a la izquierda', 'Épingler à gauche', 'Fissa a sinistra'],
+        'u.unpin': ['Soltar (arrastar livremente)', 'Unpin (drag freely)', 'Открепить (перетаскивать свободно)', '取消固定（可自由拖动）', 'Soltar (arrastrar libremente)', 'Détacher (déplacer librement)', 'Sgancia (trascina liberamente)'],
         'u.close': ['Fechar', 'Close', 'Закрыть', '关闭', 'Cerrar', 'Fermer', 'Chiudi'],
         'u.waiting': ['Aguardando análise...', 'Waiting for analysis...', 'Ожидание анализа...', '等待分析...', 'Esperando el análisis...', "En attente de l'analyse...", "In attesa dell'analisi..."],
         'u.manual': ['Manual', 'Manual', 'Ручной', '手动', 'Manual', 'Manuel', 'Manuale'],

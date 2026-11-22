@@ -611,10 +611,10 @@ win.eval(code);
   check('R: expandido também é fixo (não arrasta)', pnl.style.left === '' && pnl.style.top === '', pnl.style.left + ' / ' + pnl.style.top);
   boardEl.getBoundingClientRect = () => ({ left: 0, top: 0, width: 0, height: 0, right: 0, bottom: 0 });
   minBtn.click();
-  check('R: sem lateral à esquerda do tabuleiro, não encaixa', !pnl.classList.contains('cpp-docked'));
+  check('R: fixado (padrão) encaixa na lateral mesmo sem espaço medido', pnl.classList.contains('cpp-docked'));
   minBtn.click();
   await sleep(700);
-  check('R: sem espaço na lateral, o expandido volta a flutuar (não fixa)', !pnl.classList.contains('cpp-pinned') && !pnl.classList.contains('cpp-docked'), pnl.className);
+  check('R: fixado (padrão): o expandido fica fixo na lateral', pnl.classList.contains('cpp-pinned') && !pnl.classList.contains('cpp-docked'), pnl.className);
 
   // R2) Tela "Jogar": há outro .board pequeno no começo da página; o encaixe usa o tabuleiro principal (o maior)
   doc.body.insertAdjacentHTML('afterbegin', '<div class="board" id="decoy"></div>');
@@ -626,6 +626,47 @@ win.eval(code);
   doc.getElementById('decoy').remove();
   const blk = (sel) => { const a = cssText.indexOf(sel + ' {'); return a < 0 ? '' : cssText.slice(a, cssText.indexOf('}', a)); };
   check('R2: texto do painel recolhido tem altura fixa (3 linhas) e a dica da maratona 2 linhas', blk('.cpp-mini-text').includes('height: 48px') && blk('.cpp-mini-hint').includes('height: 26px') && !cssText.includes('cpp-mini-hint:empty'));
+  boardEl.getBoundingClientRect = () => ({ left: 0, top: 0, width: 0, height: 0, right: 0, bottom: 0 });
+
+  // PIN) Tachinha: fixo na lateral <-> solto e arrastável (a escolha fica salva)
+  const pinBtn = pnl.querySelector('.cpp-pin');
+  boardEl.getBoundingClientRect = () => ({ left: 420, top: 95, width: 700, height: 700, right: 1120, bottom: 795 });
+  if (!pnl.classList.contains('cpp-minimized')) minBtn.click();
+  await sleep(700);
+  check('PIN: padrão é fixo: tachinha acesa e painel encaixado na lateral', !!pinBtn && pinBtn.classList.contains('on') && pnl.classList.contains('cpp-docked'), pnl.className);
+  pinBtn.click();
+  await sleep(300);
+  check('PIN: solto: sai da lateral, tachinha apagada e escolha salva', !pnl.classList.contains('cpp-docked') && !pnl.classList.contains('cpp-pinned') && pnl.style.left === '' && !pinBtn.classList.contains('on') && saved && saved.pinned === false, pnl.className + ' / ' + (saved && saved.pinned));
+  hdr.dispatchEvent(new win.MouseEvent('mousedown', { bubbles: true, clientX: 50, clientY: 40 }));
+  doc.dispatchEvent(new win.MouseEvent('mousemove', { bubbles: true, clientX: 500, clientY: 300 }));
+  doc.dispatchEvent(new win.MouseEvent('mouseup', { bubbles: true }));
+  check('PIN: solto pode ser arrastado para qualquer lugar', parseInt(pnl.style.left) >= 400 && parseInt(pnl.style.top) >= 200, pnl.style.left + ' / ' + pnl.style.top);
+  const leftSolto = pnl.style.left;
+  await sleep(1300);
+  check('PIN: solto não volta sozinho para a lateral', !pnl.classList.contains('cpp-docked') && pnl.style.left === leftSolto, pnl.className + ' / ' + pnl.style.left);
+  minBtn.click();
+  await sleep(700);
+  check('PIN: solto e expandido continua solto', !pnl.classList.contains('cpp-pinned') && !pnl.classList.contains('cpp-docked'), pnl.className);
+  pinBtn.click();
+  await sleep(300);
+  check('PIN: fixar de novo leva o painel (expandido) para a lateral e salva', pnl.classList.contains('cpp-pinned') && pinBtn.classList.contains('on') && saved && saved.pinned === true, pnl.className + ' / ' + (saved && saved.pinned));
+  minBtn.click();
+  await sleep(300);
+  check('PIN: fixo e recolhido volta ao encaixe da lateral', pnl.classList.contains('cpp-docked'), pnl.className);
+  // PIN2) Recolhido entra no vão da barra lateral, logo abaixo do menu e acima de "Pesquisar" (não tapa nada)
+  doc.body.insertAdjacentHTML('afterbegin', '<aside id="sbx"><a id="m1">Jogar</a><a id="m2">Avaliação</a><a id="m3">Pesquisar</a><a id="m4">Treinar</a><a id="m5">Pular</a></aside>');
+  const rc = (l, t2, w, h) => () => ({ left: l, top: t2, width: w, height: h, right: l + w, bottom: t2 + h });
+  doc.getElementById('sbx').getBoundingClientRect = rc(0, 0, 200, 700);
+  doc.getElementById('m1').getBoundingClientRect = rc(10, 100, 180, 40);
+  doc.getElementById('m2').getBoundingClientRect = rc(10, 150, 180, 40);
+  doc.getElementById('m3').getBoundingClientRect = rc(10, 600, 180, 40);
+  // como no Chess.com: item do "Mais" fechado (tem posição, mas é invisível) e link "pular" fora da tela
+  doc.getElementById('m4').getBoundingClientRect = rc(10, 220, 180, 160);
+  doc.getElementById('m4').checkVisibility = () => false;
+  doc.getElementById('m5').getBoundingClientRect = rc(-999, 1, 32, 500);
+  await sleep(1200);
+  check('PIN2: no vão da barra lateral, logo abaixo do último item do menu (190 + 8)', pnl.classList.contains('cpp-docked') && pnl.style.top === '198px', pnl.className + ' / ' + pnl.style.top);
+  doc.getElementById('sbx').remove();
   boardEl.getBoundingClientRect = () => ({ left: 0, top: 0, width: 0, height: 0, right: 0, bottom: 0 });
 
   // W) Maratona: N partidas seguidas; ao fim de cada uma começa a próxima e ignora a revanche
