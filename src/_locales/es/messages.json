@@ -1,6 +1,6 @@
 {
   "extName": {
-    "message": "Analizador de Ajedrez Pro"
+    "message": "Analizador de Ajedrez Pro (Chess Analyzer)"
   },
   "extDesc": {
     "message": "Stockfish en Chess.com: flechas con las mejores jugadas y juego automático. Para practicar contra bots. Bajo tu responsabilidad."

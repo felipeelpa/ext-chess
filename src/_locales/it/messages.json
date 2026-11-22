@@ -1,6 +1,6 @@
 {
   "extName": {
-    "message": "Analizzatore di Scacchi Pro"
+    "message": "Analizzatore di Scacchi Pro (Chess Analyzer)"
   },
   "extDesc": {
     "message": "Stockfish su Chess.com: frecce con le mosse migliori e gioco automatico. Per allenarsi contro i bot. Uso a proprio rischio."

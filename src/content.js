@@ -2130,7 +2130,30 @@
         container.innerHTML = html;
     }
 
+    // Peça na mão (do usuário ou do arrasto automático): enquanto durar, a extensão não mexe no
+    // DOM do tabuleiro, senão a peça "treme" ao ser arrastada. O que ficou pendente é feito ao soltar.
+    let holdingPiece = false;
+    let userHold = false, autoHold = false;
+    let arrowsDirty = false;
+    function setHolding() {
+        const was = holdingPiece;
+        holdingPiece = userHold || autoHold;
+        if (was && !holdingPiece && arrowsDirty) {
+            arrowsDirty = false;
+            if (lastPlan) highlightAnalysisMoves(planArrowLines(lastPlan));
+            else if (currentLines.length > 0) highlightAnalysisMoves(currentLines);
+        }
+    }
+    // só toques de verdade (isTrusted): os do arrasto automático são marcados à parte
+    window.addEventListener('pointerdown', (e) => {
+        if (e.isTrusted && e.button === 0 && e.target && e.target.closest && e.target.closest('.board, wc-chess-board')) { userHold = true; setHolding(); setTimeout(() => { userHold = false; setHolding(); }, 10000); }
+    }, true);
+    ['pointerup', 'pointercancel', 'blur'].forEach(t => window.addEventListener(t, (e) => {
+        if (!e || e.isTrusted !== false) { userHold = false; setHolding(); }
+    }, true));
+
     function highlightAnalysisMoves(lines) {
+        if (holdingPiece) { arrowsDirty = true; return; }
         document.querySelectorAll('.cpp-best-move-arrow').forEach(el => el.remove());
         if (!lines || lines.length === 0) return;
 
@@ -2287,6 +2310,8 @@
 
         // Aperta o botão sobre a peça
         fire(startEl, fromPos.x, fromPos.y, 0, 'pointerover', 'mouseover');
+        autoHold = true; setHolding();
+        timers.setTimeout(() => { autoHold = false; setHolding(); }, 4000);   // rede de segurança
         fire(startEl, fromPos.x, fromPos.y, 1, 'pointerdown', 'mousedown');
 
         const dist = Math.hypot(toPos.x - fromPos.x, toPos.y - fromPos.y);
@@ -2317,6 +2342,7 @@
             timers.setTimeout(() => {
                 const dropEl = document.elementFromPoint(toPos.x, toPos.y) || el;
                 fire(dropEl, toPos.x, toPos.y, 0, 'pointerup', 'mouseup');
+                autoHold = false; setHolding();
                 if (typeof onDone === 'function') onDone();
             }, 40 + Math.random() * 60);
         };
@@ -2940,11 +2966,16 @@
         };
     }
 
+    let hangingSig = '';
     function highlightHangingPieces(attackAnalysis) {
-        document.querySelectorAll('.cpp-hanging-overlay').forEach(el => el.remove());
-
+        if (holdingPiece) return;
         const board = mainBoard();
         if (!board) return;
+        // nada mudou e a marcação continua lá: não refaz (menos mexida no tabuleiro)
+        const sig = JSON.stringify(Object.entries(attackAnalysis).filter(([, p]) => p.status === 'hanging' || p.status === 'defended').map(([s, p]) => s + p.status)) + isBoardFlipped() + board.getBoundingClientRect().width;
+        if (sig === hangingSig && board.querySelector('.cpp-hanging-overlay')) return;
+        hangingSig = sig;
+        document.querySelectorAll('.cpp-hanging-overlay').forEach(el => el.remove());
 
         const boardRect = board.getBoundingClientRect();
         const squareSize = boardRect.width / 8;
@@ -2994,7 +3025,7 @@
     // ============= ATUALIZAR O PAINEL =============
     function updatePanel() {
         const panel = document.getElementById('chess-position-panel');
-        if (!panel) return;
+        if (!panel || holdingPiece) return;
 
         const positions = getBoardPosition();
         highlightHangingPieces(analyzeAttacksDefenses(positions));
@@ -3625,7 +3656,8 @@
         marathonStep();
         autoMoveWatchdog(fen);
         const dockedPanel = document.querySelector('#chess-position-panel.cpp-docked');
-        if (dockedPanel) layoutDock(dockedPanel);
+        if (holdingPiece) { /* peça na mão: não mexe na tela */ }
+        else if (dockedPanel) layoutDock(dockedPanel);
         else {
             const pn = document.getElementById('chess-position-panel');
             if (pn && pn.classList.contains('cpp-minimized')) dockPanel(pn, true);   // recolhido: encaixa assim que houver a lateral

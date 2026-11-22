@@ -1,6 +1,6 @@
 {
   "extName": {
-    "message": "Шахматный анализатор Pro"
+    "message": "Шахматный анализатор Pro (Chess Analyzer)"
   },
   "extDesc": {
     "message": "Stockfish на Chess.com: стрелки с лучшими ходами и автоход. Для тренировки против ботов. Используйте на свой риск."
