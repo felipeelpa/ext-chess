@@ -1707,7 +1707,8 @@
             .filter(l => !(l.move.length === 5 && l.move[4] !== 'q'))   // não escolhe subpromoção
             .map(l => ({ move: l.move, loss: bestCp - cp(l.score), line: l }))
             .filter(o => o.loss > greenLoss && cp({ type: 'cp', value: bestCp - o.loss }) > -2500) // pior que o verde e nunca leva mate
-            .filter(o => captureNet(positions, o.move) >= 0);   // erro humano não entrega peça maior por menor (dama por torre)
+            .filter(o => captureNet(positions, o.move) >= 0)   // erro humano não entrega peça maior por menor (dama por torre)
+            .filter(o => mateAhead || rating >= OBVIOUS_CAPTURE_MAX_RATING || !isSacrifice(positions, o.move));   // nem dama de graça num xeque sem fundamento
 
         // Captura: o melhor lance é captura, ou há uma captura vantajosa óbvia entre os candidatos
         // (peça maior ou igual à que captura, valendo pelo menos um cavalo) => os lances de erro

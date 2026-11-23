@@ -13,7 +13,7 @@ const sb = { self: {}, document, console, setTimeout, setInterval, clearInterval
   location: { href: 'https://www.chess.com/game/live/1' },
   chrome: { runtime: { getURL: x => x, onMessage: { addListener() {} } } },
   MutationObserver: class { observe() {} } };
-sb.window = { location: sb.location };
+sb.window = { location: sb.location, addEventListener() {} };
 vm.createContext(sb);
 vm.runInContext(fs.readFileSync(process.argv[2] + '\\chess-lite.js', 'utf8'), sb);
 vm.runInContext(code, sb);
@@ -236,6 +236,12 @@ check('rating 1900: idem', T.planCandidates('d1d5', 1900, mulberry32(2)).best.mo
 check('rating 3200: o sacrifício do motor é mantido', T.planCandidates('d1d5', 3200, mulberry32(2)).best.move === 'd1d5');
 T.setCtx([lineOf('d1d5', 120), lineOf('a2a3', -400)], 20, null);
 check('rating 800: sem alternativa decente, mantém o lance do motor', T.planCandidates('d1d5', 800, mulberry32(2)).best.move === 'd1d5');
+// Dama de graça (sem captura) como laranja/vermelho: só some abaixo de 2000
+T.setBoard({ e1: P('wk'), e8: P('bk'), d1: P('wq'), e6: P('bp'), a2: P('wp') });
+T.setCtx([lineOf('a2a3', 100), lineOf('d1d5', -150), lineOf('a2a4', 60)], 20, null);
+const pQ = (r) => T.planCandidates('a2a3', r, mulberry32(2));
+check('rating 800: dama de graça não vira laranja/vermelho', ![pQ(800).orange, pQ(800).red].some(o => o && o.move === 'd1d5'));
+check('rating 3200: o motor decide (dama pode aparecer)', [pQ(3200).orange, pQ(3200).red].some(o => o && o.move === 'd1d5'));
 T.setBoard({});
 
 // Dama x torre defendida: ninguém faz isso por vontade própria (nem como erro simulado)
