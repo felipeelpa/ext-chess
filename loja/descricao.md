@@ -12,9 +12,9 @@ O link do código-fonte abaixo (`github.com/felipeelpa/ext-chess`) só funciona 
 
 ## Português (Brasil) — pt-BR
 
-**Nome:** Analisador de Xadrez Pro
+**Nome:** Analisador de Xadrez Pro (Chess Analyzer) - 100% Gratuito
 
-**Descrição curta:** Stockfish no Chess.com: setas com os melhores lances e jogada automática. Para treinar contra bots. Uso por sua conta e risco.
+**Descrição curta:** 100% gratuito, para sempre. Stockfish no Chess.com: setas dos melhores lances. Para treinar contra bots. Por sua conta e risco.
 
 **Descrição completa:**
 
@@ -22,6 +22,8 @@ O link do código-fonte abaixo (`github.com/felipeelpa/ext-chess`) só funciona 
 • Esta extensão é indicada para melhorar seu desempenho jogando CONTRA BOTS, e para treino e análise.
 • NÃO recomendamos usá-la contra outras pessoas. Usar um motor de xadrez ou jogada automática em partidas contra humanos viola os Termos de Uso e a política de jogo limpo (Fair Play) do Chess.com.
 • O uso é por sua conta e risco. O uso indevido pode causar a suspensão ou o banimento da sua conta. Os autores não se responsabilizam por contas suspensas ou banidas, nem por qualquer outro prejuízo.
+
+100% GRATUITA: sem assinatura, sem período de teste, sem recursos pagos. Nunca será cobrada, sempre será gratuita. (Há um botão de doação opcional, se quiser apoiar.)
 
 O QUE ELA FAZ
 Analisa a partida no Chess.com com o Stockfish, dentro do seu navegador, e mostra no tabuleiro setas com os 3 melhores lances: verde (melhor), laranja (intermediário) e vermelha (ruim).
@@ -43,9 +45,9 @@ Extensão independente, sem ligação com o Chess.com. "Chess.com" é marca dos 
 
 ## English — en
 
-**Name:** Chess Analyzer Pro
+**Name:** Chess Analyzer Pro - 100% Free
 
-**Short description:** Stockfish on Chess.com: arrows for the best moves and optional auto-play. Meant for practice against bots. Use at your own risk.
+**Short description:** 100% free, forever. Stockfish on Chess.com: arrows for the best moves. Meant for practice against bots. Use at your own risk.
 
 **Full description:**
 
@@ -53,6 +55,8 @@ Extensão independente, sem ligação com o Chess.com. "Chess.com" é marca dos 
 • This extension is intended to help you improve your play against BOTS, and for practice and analysis.
 • We do NOT recommend using it against other people. Using a chess engine or auto-play in games against humans violates Chess.com's Terms of Use and its Fair Play policy.
 • You use it at your own risk. Misuse can lead to your account being suspended or banned. The authors are not responsible for suspended or banned accounts, or for any other loss.
+
+100% FREE: no subscription, no trial period, no paid features. It will never be charged for and will always be free. (There is an optional donate button if you want to support it.)
 
 WHAT IT DOES
 It analyzes your game on Chess.com with Stockfish, inside your browser, and draws arrows on the board for the 3 best moves: green (best), orange (medium) and red (poor).
@@ -74,9 +78,9 @@ Independent extension, not affiliated with Chess.com. "Chess.com" is a trademark
 
 ## 简体中文 — zh-CN
 
-**名称：** 国际象棋分析器 Pro
+**名称：** 国际象棋分析器 Pro (Chess Analyzer) - 100%免费
 
-**简短说明：** 在 Chess.com 上使用 Stockfish：用箭头显示最佳着法，并可自动走棋。适合与电脑对手练习，风险自负。
+**简短说明：** 永久 100% 免费。在 Chess.com 上用 Stockfish 箭头显示最佳着法。适合与电脑对手练习，风险自负。
 
 **详细说明：**
 
@@ -84,6 +88,8 @@ Independent extension, not affiliated with Chess.com. "Chess.com" is a trademark
 • 本扩展适用于提高你与电脑（机器人）对弈时的水平，以及练习和分析。
 • 我们不建议在与真人对弈时使用。在与真人的对局中使用国际象棋引擎或自动走棋，违反 Chess.com 的服务条款和公平竞赛（Fair Play）政策。
 • 使用风险由你自行承担。滥用可能导致你的账号被封禁或停用。对于账号被封禁或停用以及其他任何损失，作者概不负责。
+
+100% 免费：无订阅、无试用期、无付费功能。永远不会收费，永远免费。（如想支持作者，可使用可选的捐赠按钮。）
 
 功能介绍
 在浏览器内使用 Stockfish 分析 Chess.com 上的对局，并在棋盘上用箭头标出 3 个最佳着法：绿色（最佳）、橙色（中等）、红色（较差）。
@@ -105,9 +111,9 @@ Independent extension, not affiliated with Chess.com. "Chess.com" is a trademark
 
 ## Русский — ru
 
-**Название:** Шахматный анализатор Pro
+**Название:** Шахматный анализатор Pro (Chess Analyzer) - 100% бесплатно
 
-**Краткое описание:** Stockfish на Chess.com: стрелки с лучшими ходами и автоход. Для тренировки против ботов. Используйте на свой риск.
+**Краткое описание:** 100% бесплатно, навсегда. Stockfish на Chess.com: стрелки лучших ходов. Для тренировки против ботов. На свой риск.
 
 **Полное описание:**
 
@@ -115,6 +121,8 @@ Independent extension, not affiliated with Chess.com. "Chess.com" is a trademark
 • Расширение предназначено для улучшения вашей игры ПРОТИВ БОТОВ, а также для тренировки и анализа.
 • Мы НЕ рекомендуем использовать его против живых людей. Использование шахматного движка или автохода в партиях против людей нарушает Условия использования и политику честной игры (Fair Play) Chess.com.
 • Вы используете расширение на свой страх и риск. Неправильное использование может привести к блокировке или бану аккаунта. Авторы не несут ответственности за заблокированные аккаунты и любой другой ущерб.
+
+100% БЕСПЛАТНО: без подписки, без пробного периода, без платных функций. Никогда не будет платным, всегда будет бесплатным. (Есть необязательная кнопка пожертвования, если захотите поддержать.)
 
 ЧТО ОНО ДЕЛАЕТ
 Анализирует партию на Chess.com с помощью Stockfish прямо в браузере и рисует на доске стрелки для 3 лучших ходов: зелёная (лучший), оранжевая (средний) и красная (плохой).
@@ -136,9 +144,9 @@ Independent extension, not affiliated with Chess.com. "Chess.com" is a trademark
 
 ## Español — es
 
-**Nombre:** Analizador de Ajedrez Pro
+**Nombre:** Analizador de Ajedrez Pro (Chess Analyzer) - 100% Gratis
 
-**Descripción corta:** Stockfish en Chess.com: flechas con las mejores jugadas y juego automático. Para practicar contra bots. Bajo tu responsabilidad.
+**Descripción corta:** 100% gratis, siempre. Stockfish en Chess.com: flechas con las mejores jugadas. Para practicar contra bots. Bajo tu responsabilidad.
 
 **Descripción completa:**
 
@@ -146,6 +154,8 @@ Independent extension, not affiliated with Chess.com. "Chess.com" is a trademark
 • Esta extensión está pensada para mejorar tu rendimiento jugando CONTRA BOTS, y para practicar y analizar.
 • NO recomendamos usarla contra otras personas. Usar un motor de ajedrez o el juego automático en partidas contra humanos infringe los Términos de Uso y la política de juego limpio (Fair Play) de Chess.com.
 • El uso es bajo tu propia responsabilidad. El uso indebido puede provocar la suspensión o el bloqueo de tu cuenta. Los autores no se hacen responsables de cuentas suspendidas o bloqueadas, ni de ningún otro perjuicio.
+
+100% GRATIS: sin suscripción, sin período de prueba, sin funciones de pago. Nunca se cobrará, siempre será gratis. (Hay un botón de donación opcional, si quieres apoyar.)
 
 QUÉ HACE
 Analiza tu partida en Chess.com con Stockfish, dentro de tu navegador, y dibuja en el tablero flechas con las 3 mejores jugadas: verde (mejor), naranja (intermedia) y roja (mala).
@@ -167,9 +177,9 @@ Extensión independiente, sin vinculación con Chess.com. «Chess.com» es marca
 
 ## Français — fr
 
-**Nom :** Analyseur d'Échecs Pro
+**Nom :** Analyseur d'Échecs Pro (Chess Analyzer) - 100 % Gratuit
 
-**Description courte :** Stockfish sur Chess.com : flèches des meilleurs coups et jeu automatique. Pour s'entraîner contre des bots. À vos risques.
+**Description courte :** 100 % gratuit, toujours. Stockfish sur Chess.com : flèches des meilleurs coups. Pour s'entraîner contre des bots. À vos risques.
 
 **Description complète :**
 
@@ -177,6 +187,8 @@ Extensión independiente, sin vinculación con Chess.com. «Chess.com» es marca
 • Cette extension est destinée à améliorer votre jeu CONTRE DES BOTS, ainsi qu'à l'entraînement et à l'analyse.
 • Nous NE recommandons PAS de l'utiliser contre d'autres personnes. Utiliser un moteur d'échecs ou le jeu automatique dans des parties contre des humains enfreint les Conditions d'utilisation et la politique de fair-play de Chess.com.
 • Vous l'utilisez à vos propres risques. Un usage abusif peut entraîner la suspension ou le bannissement de votre compte. Les auteurs déclinent toute responsabilité en cas de compte suspendu ou banni, ou de tout autre préjudice.
+
+100 % GRATUIT : sans abonnement, sans période d'essai, sans fonctions payantes. Il ne sera jamais payant, toujours gratuit. (Un bouton de don facultatif existe, si vous voulez soutenir.)
 
 CE QU'ELLE FAIT
 Elle analyse votre partie sur Chess.com avec Stockfish, directement dans votre navigateur, et dessine sur l'échiquier des flèches pour les 3 meilleurs coups : vert (meilleur), orange (moyen) et rouge (mauvais).
@@ -198,9 +210,9 @@ Extension indépendante, sans lien avec Chess.com. « Chess.com » est une marqu
 
 ## Italiano — it
 
-**Nome:** Analizzatore di Scacchi Pro
+**Nome:** Analizzatore di Scacchi Pro (Chess Analyzer) - 100% Gratis
 
-**Descrizione breve:** Stockfish su Chess.com: frecce con le mosse migliori e gioco automatico. Per allenarsi contro i bot. Uso a proprio rischio.
+**Descrizione breve:** 100% gratis, per sempre. Stockfish su Chess.com: frecce con le mosse migliori. Per allenarsi contro i bot. Uso a proprio rischio.
 
 **Descrizione completa:**
 
@@ -208,6 +220,8 @@ Extension indépendante, sans lien avec Chess.com. « Chess.com » est une marqu
 • Questa estensione è pensata per migliorare il tuo rendimento giocando CONTRO I BOT, e per allenamento e analisi.
 • NON consigliamo di usarla contro altre persone. Usare un motore scacchistico o il gioco automatico in partite contro esseri umani viola i Termini di utilizzo e la politica di fair play di Chess.com.
 • L'uso è a tuo rischio e pericolo. Un uso improprio può causare la sospensione o il ban del tuo account. Gli autori non sono responsabili per account sospesi o bannati, né per qualsiasi altro danno.
+
+100% GRATIS: nessun abbonamento, nessuna prova a tempo, nessuna funzione a pagamento. Non verrà mai addebitato nulla, sarà sempre gratis. (C'è un pulsante di donazione facoltativo, se vuoi sostenere.)
 
 COSA FA
 Analizza la tua partita su Chess.com con Stockfish, direttamente nel browser, e disegna sulla scacchiera le frecce delle 3 mosse migliori: verde (migliore), arancione (intermedia) e rossa (scarsa).
