@@ -447,8 +447,9 @@ win.eval(code);
   doc.body.insertAdjacentHTML('beforeend', '<button id="drawbtn" aria-label="Empate">½</button>');
   doc.getElementById('drawbtn').addEventListener('click', () => {
     drawClicks++; drawT = Date.now();
-    doc.body.insertAdjacentHTML('beforeend', '<div role="dialog"><button>Cancelar</button><button class="draw-ok">Oferecer empate</button></div>');
-    doc.querySelector('.draw-ok').addEventListener('click', () => { drawConfirms++; doc.querySelectorAll('[role="dialog"]').forEach(d => d.remove()); });
+    doc.body.insertAdjacentHTML('beforeend', '<div class="cc-confirmation-popover-popover"><p>Tem certeza de que deseja propor um empate?</p><div class="cc-confirmation-popover-buttons"><button>Cancelar</button><button class="draw-ok">Propor</button></div></div>');
+    doc.querySelector('.cc-confirmation-popover-popover').getBoundingClientRect = () => ({ left: 10, top: 10, width: 200, height: 80, right: 210, bottom: 90 });
+    doc.querySelector('.draw-ok').addEventListener('click', () => { drawConfirms++; doc.querySelectorAll('.cc-confirmation-popover-popover').forEach(d => d.remove()); });
   });
   const rookFen = (i) => `k7/8/8/${i > 0 ? i : ''}r${7 - i > 0 ? 7 - i : ''}/8/8/PPP5/4K3`;
   const rookStep = (i) => setBoard(rookFen(i), [(i === 0 ? 7 : i) * 10 + 5, (i + 1) * 10 + 5]);
@@ -944,7 +945,7 @@ win.eval(code);
   const pnY = doc.getElementById('chess-position-panel');
   if (pnY && !pnY.classList.contains('cpp-minimized')) pnY.querySelector('.cpp-minimize').click();
 
-  // R) Pedido de avaliação: 3ª partida mostra; "Mais tarde" volta após mais 3; "não exibir" encerra
+  // R) Pedido de avaliação: 3ª partida mostra; "Mais tarde" volta após mais 10; "não exibir" encerra
   rateStore = undefined; { const c = doc.getElementById('cpp-rate'); if (c) c.remove(); }
   await sleep(2500);
   const endGame = async () => { showGameOver(); await sleep(2600); doc.getElementById('gom').remove(); await sleep(2600); };
@@ -953,11 +954,11 @@ win.eval(code);
   await endGame();
   check('R: 3ª partida: cartão aparece com os botões', !!doc.getElementById('cpp-rate') && !!doc.querySelector('#cpp-rate .cpp-rate-go') && !!doc.querySelector('#cpp-rate input[type=checkbox]'));
   doc.querySelector('#cpp-rate .cpp-rate-later').click(); await sleep(200);
-  check('R: "Mais tarde": fecha e agenda para a 6ª partida', !doc.getElementById('cpp-rate') && rateStore && rateStore.nextAt === 6 && !rateStore.never, JSON.stringify(rateStore));
-  await endGame(); await endGame();
-  check('R: 4ª e 5ª partidas: sem cartão', !doc.getElementById('cpp-rate'));
+  check('R: "Mais tarde": fecha e agenda para a 13ª partida', !doc.getElementById('cpp-rate') && rateStore && rateStore.nextAt === 13 && !rateStore.never, JSON.stringify(rateStore));
+  rateStore.games = 11; await endGame();
+  check('R: 12ª partida: sem cartão', !doc.getElementById('cpp-rate'));
   await endGame();
-  check('R: 6ª partida: cartão volta', !!doc.getElementById('cpp-rate'));
+  check('R: 13ª partida (10 depois do "mais tarde"): cartão volta', !!doc.getElementById('cpp-rate'));
   doc.querySelector('#cpp-rate input').checked = true;
   doc.querySelector('#cpp-rate .cpp-rate-later').click(); await sleep(200);
   check('R: caixa "não exibir" marcada: fecha e grava never', !doc.getElementById('cpp-rate') && rateStore && rateStore.never === true, JSON.stringify(rateStore));

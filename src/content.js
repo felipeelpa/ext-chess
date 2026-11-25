@@ -958,7 +958,21 @@
         return findControl(RESIGN_CONFIRM_ANYWHERE_RE, document, false, resignBtn, false);
     }
 
+    // Pop-up "Tem certeza?" do próprio site (Cancelar + confirmar): clica no botão que NÃO é o de cancelar,
+    // seja qual for o texto dele. wantRe/skipRe escolhem o assunto (empate x desistência) pelo texto do pop-up.
+    function clickSiteConfirm(wantRe, skipRe) {
+        for (const p of document.querySelectorAll('[class*="confirmation-popover-popover"]')) {
+            const r = p.getBoundingClientRect();
+            const txt = (p.textContent || '').toLowerCase();
+            if (r.width <= 0 || r.height <= 0 || (wantRe && !wantRe.test(txt)) || (skipRe && skipRe.test(txt))) continue;
+            const btns = Array.from(p.querySelectorAll('button')).filter(b => !RESIGN_CANCEL_RE.test(textOfControl(b)));
+            if (btns.length) { btns[btns.length - 1].click(); return true; }
+        }
+        return false;
+    }
+
     function confirmResign(attempt, resignBtn) {
+        if (clickSiteConfirm(null, /draw|empate/)) return;
         const btn = findConfirmButton(resignBtn);
         if (btn) { btn.click(); return; }
         // Sem confirmação ainda: tenta de novo algumas vezes (pode nem existir)
@@ -1071,6 +1085,7 @@
     }
 
     function confirmDrawOffer(attempt, drawBtn) {
+        if (clickSiteConfirm(DRAW_CONTEXT_RE)) return;
         const dialogs = document.querySelectorAll('[role="dialog"], [class*="modal"], [class*="dialog"], [class*="confirm"], [class*="popover"]');
         for (const d of dialogs) {
             // só janelas que falam de empate (não confundir com outra confirmação aberta na página)
@@ -1078,7 +1093,7 @@
             const el = findControl(about ? DRAW_CONFIRM_RE : /^(oferecer|offer)/, d, false, drawBtn);
             if (el) { el.click(); return; }
         }
-        if (attempt < 3) timers.setTimeout(() => confirmDrawOffer(attempt + 1, drawBtn), 400);
+        if (attempt < 6) timers.setTimeout(() => confirmDrawOffer(attempt + 1, drawBtn), 400);
     }
 
     // Oferece o empate e espera 3 a 4 s; depois joga o lance (se o jogo continuar)
@@ -3440,10 +3455,10 @@
     }
 
     // ============= PEDIDO DE AVALIAÇÃO NA LOJA =============
-    // Ao fim de uma partida, a partir da 3ª, um cartão pede avaliação. "Mais tarde" volta depois de 3
-    // partidas; "Avaliar" ou a caixa "não exibir novamente" encerram os pedidos. Estado em cppRate.
+    // Ao fim da 3ª partida um cartão pede avaliação. "Mais tarde" volta depois de 10 partidas; "Avaliar" ou a caixa "não exibir novamente" encerram os pedidos. Estado em cppRate.
     const STORE_REVIEW_URL = 'https://chromewebstore.google.com/detail/lpjkldkdhjbpilhgdbjhckkmacpneacd/reviews';
-    const RATE_EVERY_GAMES = 3;
+    const RATE_FIRST_GAME = 3;
+    const RATE_EVERY_GAMES = 10;
     let rateWasOver = null, rateTimer = null;
 
     function rateLoad(cb) {
@@ -3478,7 +3493,7 @@
             if (s.never) return;
             s.games = (s.games || 0) + 1;
             rateSave(s);
-            if (s.games >= (s.nextAt || RATE_EVERY_GAMES)) showRateCard();
+            if (s.games >= (s.nextAt || RATE_FIRST_GAME)) showRateCard();
         });
     }
     document.addEventListener('cpp-rate-test', showRateCard);   // teste manual: document.dispatchEvent(new Event('cpp-rate-test'))
