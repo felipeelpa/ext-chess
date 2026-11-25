@@ -43,12 +43,13 @@ win.console.error = (...a) => errors.push('console.error: ' + a.join(' '));
 let saved = null;
 let listener = null;
 let storageListener = null;
+let rateStore;
 let savedLang = null;
 win.chrome = {
   runtime: { id: 'teste', getURL: x => x, lastError: null, onMessage: { addListener: fn => { listener = fn; } } },
   storage: { local: {
-    get: (k, cb) => cb({ cppSettings: { depth: 5, autoMove: true, pace: 'fast' } }),
-    set: (o) => { if (o.cppSettings) saved = o.cppSettings; if (o.cppLang) savedLang = o.cppLang; },
+    get: (k, cb) => cb({ cppSettings: { depth: 5, autoMove: true, pace: 'fast' }, cppRate: rateStore }),
+    set: (o) => { if (o.cppRate) rateStore = JSON.parse(JSON.stringify(o.cppRate)); if (o.cppSettings) saved = o.cppSettings; if (o.cppLang) savedLang = o.cppLang; },
   }, onChanged: { addListener: fn => { storageListener = fn; } } },
 };
 let engineScore = { type: 'cp', value: 80 };   // placar que o motor simulado devolve (vez de quem joga)
@@ -942,6 +943,26 @@ win.eval(code);
   check('Y: ligada de novo: o painel volta', !!doc.getElementById('chess-position-panel'));
   const pnY = doc.getElementById('chess-position-panel');
   if (pnY && !pnY.classList.contains('cpp-minimized')) pnY.querySelector('.cpp-minimize').click();
+
+  // R) Pedido de avaliação: 3ª partida mostra; "Mais tarde" volta após mais 3; "não exibir" encerra
+  rateStore = undefined; { const c = doc.getElementById('cpp-rate'); if (c) c.remove(); }
+  await sleep(2500);
+  const endGame = async () => { showGameOver(); await sleep(2600); doc.getElementById('gom').remove(); await sleep(2600); };
+  await endGame(); await endGame();
+  check('R: 1ª e 2ª partidas: sem cartão', !doc.getElementById('cpp-rate'));
+  await endGame();
+  check('R: 3ª partida: cartão aparece com os botões', !!doc.getElementById('cpp-rate') && !!doc.querySelector('#cpp-rate .cpp-rate-go') && !!doc.querySelector('#cpp-rate input[type=checkbox]'));
+  doc.querySelector('#cpp-rate .cpp-rate-later').click(); await sleep(200);
+  check('R: "Mais tarde": fecha e agenda para a 6ª partida', !doc.getElementById('cpp-rate') && rateStore && rateStore.nextAt === 6 && !rateStore.never, JSON.stringify(rateStore));
+  await endGame(); await endGame();
+  check('R: 4ª e 5ª partidas: sem cartão', !doc.getElementById('cpp-rate'));
+  await endGame();
+  check('R: 6ª partida: cartão volta', !!doc.getElementById('cpp-rate'));
+  doc.querySelector('#cpp-rate input').checked = true;
+  doc.querySelector('#cpp-rate .cpp-rate-later').click(); await sleep(200);
+  check('R: caixa "não exibir" marcada: fecha e grava never', !doc.getElementById('cpp-rate') && rateStore && rateStore.never === true, JSON.stringify(rateStore));
+  await endGame(); await endGame(); await endGame();
+  check('R: depois de "não exibir": nunca mais aparece', !doc.getElementById('cpp-rate'));
 
   // I) Idiomas: trocar no painel traduz tudo na hora; voltar ao português restaura
   const langOf = () => doc.getElementById('cpp-lang-select');

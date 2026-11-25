@@ -744,3 +744,15 @@
 /* Tachinha: verde quando fixo, apagada quando solto */
 .cpp-pin { opacity: 0.55; }
 .cpp-pin.on { opacity: 1; color: #4cd07d; }
+
+/* Pedido de avaliação na loja (fim de partida) */
+#cpp-rate { position: fixed; right: 20px; bottom: 20px; z-index: 2147483000; width: 290px; padding: 14px 16px; box-sizing: border-box;
+  background: #262522; color: #fff; border: 1px solid #4cd07d; border-radius: 12px; box-shadow: 0 8px 28px rgba(0,0,0,.5);
+  font: 13px/1.4 'Segoe UI', system-ui, sans-serif; }
+#cpp-rate .cpp-rate-t { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+#cpp-rate .cpp-rate-x { color: #c9c9c9; margin-bottom: 10px; }
+#cpp-rate .cpp-rate-n { display: flex; align-items: center; gap: 6px; color: #aaa; margin-bottom: 10px; cursor: pointer; }
+#cpp-rate .cpp-rate-b { display: flex; gap: 8px; }
+#cpp-rate button { flex: 1; padding: 7px 10px; border: 0; border-radius: 8px; font: inherit; font-weight: 600; cursor: pointer; }
+#cpp-rate .cpp-rate-go { background: #4cd07d; color: #10230f; }
+#cpp-rate .cpp-rate-later { background: #3a3936; color: #ddd; }

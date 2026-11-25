@@ -2763,6 +2763,7 @@
         updatePanel();
         if (panelUpdateInterval) timers.clear(panelUpdateInterval);
         panelUpdateInterval = timers.setInterval(updatePanel, 2000);
+        if (!rateTimer) rateTimer = timers.setInterval(rateTick, 2000);
 
         return panel;
     }
@@ -3437,6 +3438,50 @@
         const review = ctl.some(t => /revis[ãa]o da partida|game review/.test(t));
         return rematch && (newGame || review);
     }
+
+    // ============= PEDIDO DE AVALIAÇÃO NA LOJA =============
+    // Ao fim de uma partida, a partir da 3ª, um cartão pede avaliação. "Mais tarde" volta depois de 3
+    // partidas; "Avaliar" ou a caixa "não exibir novamente" encerram os pedidos. Estado em cppRate.
+    const STORE_REVIEW_URL = 'https://chromewebstore.google.com/detail/lpjkldkdhjbpilhgdbjhckkmacpneacd/reviews';
+    const RATE_EVERY_GAMES = 3;
+    let rateWasOver = null, rateTimer = null;
+
+    function rateLoad(cb) {
+        try { chrome.storage.local.get('cppRate', (r) => { if (!chrome.runtime.lastError) cb((r && r.cppRate) || {}); }); } catch (e) { /* sem storage: não pede */ }
+    }
+    function rateSave(s) { try { chrome.storage.local.set({ cppRate: s }); } catch (e) { /* idem */ } }
+
+    function showRateCard() {
+        if (document.getElementById('cpp-rate')) return;
+        const d = document.createElement('div');
+        d.id = 'cpp-rate';
+        d.innerHTML = `<div class="cpp-rate-t">${tr('r.title')}</div><div class="cpp-rate-x">${tr('r.text')}</div>
+            <label class="cpp-rate-n"><input type="checkbox"> ${tr('r.never')}</label>
+            <div class="cpp-rate-b"><button class="cpp-rate-go">${tr('r.rate')}</button><button class="cpp-rate-later">${tr('r.later')}</button></div>`;
+        const finish = (rated) => {
+            const never = rated || d.querySelector('input').checked;
+            d.remove();
+            rateLoad((s) => { if (never) s.never = true; else s.nextAt = (s.games || 0) + RATE_EVERY_GAMES; rateSave(s); });
+        };
+        d.querySelector('.cpp-rate-go').addEventListener('click', () => { window.open(STORE_REVIEW_URL, '_blank', 'noopener'); finish(true); });
+        d.querySelector('.cpp-rate-later').addEventListener('click', () => finish(false));
+        document.body.appendChild(d);
+    }
+
+    // Conta a partida na transição "em andamento" -> "acabou" (carregar a página já com partida acabada não conta)
+    function rateTick() {
+        const over = gameIsOver();
+        const ended = rateWasOver === false && over;
+        rateWasOver = over;
+        if (!ended) return;
+        rateLoad((s) => {
+            if (s.never) return;
+            s.games = (s.games || 0) + 1;
+            rateSave(s);
+            if (s.games >= (s.nextAt || RATE_EVERY_GAMES)) showRateCard();
+        });
+    }
+    document.addEventListener('cpp-rate-test', showRateCard);   // teste manual: document.dispatchEvent(new Event('cpp-rate-test'))
 
     // Pergunta ao próprio site se a partida acabou (true/false), ou null se não conseguir responder
     async function siteGameFinished(id) {
